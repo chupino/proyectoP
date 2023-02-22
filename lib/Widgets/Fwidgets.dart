@@ -1,14 +1,13 @@
 import 'package:flutter/material.dart';
 
 class appBar extends StatelessWidget implements PreferredSizeWidget {
-  const appBar({
-    Key? key,
-  }) : super(key: key);
+  final String tittle;
+  const appBar({Key? key, required this.tittle}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return AppBar(
-      title: Text("PERIODICO"),
+      title: Text(tittle),
     );
   }
 
@@ -18,8 +17,7 @@ class appBar extends StatelessWidget implements PreferredSizeWidget {
 
 class navBar extends StatefulWidget {
   final int selectedIndex;
-  const navBar({required Key key, required this.selectedIndex})
-      : super(key: key);
+  const navBar({Key? key, required this.selectedIndex}) : super(key: key);
 
   @override
   State<navBar> createState() => _navBarState();
@@ -65,7 +63,7 @@ class _navBarState extends State<navBar> {
           icon: Icon(Icons.home),
           label: "INICIO",
         ),
-        BottomNavigationBarItem(icon: Icon(Icons.search), label: "BUSCAR"),
+        BottomNavigationBarItem(icon: Icon(Icons.explore), label: "EXPLORAR"),
         BottomNavigationBarItem(icon: Icon(Icons.download), label: "DESCARGAS"),
         BottomNavigationBarItem(icon: Icon(Icons.settings), label: "AJUSTES")
       ],
