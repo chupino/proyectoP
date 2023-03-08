@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter/src/widgets/placeholder.dart';
+import 'package:flutter_widget_from_html/flutter_widget_from_html.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:periodico/services/dataHandler.dart';
 
@@ -25,14 +26,19 @@ class _testScreenState extends State<testScreen> {
         future: UserServices().getContentNotification(postId),
         builder: (context, snapshot) {
           if (snapshot.hasData && snapshot.data!.isNotEmpty) {
+            String htmlContent = snapshot.data!["content"];
             return Center(
               child: Container(
                 child: Column(children: [
-                  Text("${snapshot.data!["title"]}"),
+                  Text(snapshot.data!["id"].toString()),
+                  Text(snapshot.data!["title"]),
+                  //Text(snapshot.data!["content"]),
+                  HtmlWidget(htmlContent),
                 ]),
               ),
             );
           } else if (snapshot.hasError) {
+            print(snapshot.error);
             return Center(
               child: Column(
                 mainAxisSize: MainAxisSize.min,

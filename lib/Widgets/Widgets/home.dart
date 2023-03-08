@@ -33,12 +33,8 @@ class _HomePageState extends State<Home> {
           appBar: AppBar(
             title: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                const Text("INICIO"),
-                const SizedBox(width: 20),
-                _selectedIndex == 0
-                    ? const Text("NOTICIAS")
-                    : const Text("EDICIÓN IMPRESA"),
+              children: const [
+                Text("INICIO"),
               ],
             ),
             bottom: TabBar(

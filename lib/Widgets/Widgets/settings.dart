@@ -14,9 +14,6 @@ class Ajustes extends StatefulWidget {
 }
 
 class _AjustesState extends State<Ajustes> {
-  bool _economia = false;
-  bool _policiaco = false;
-  Map<String, bool> _tags = {};
   @override
   void initState() {
     // TODO: implement initState
@@ -29,6 +26,13 @@ class _AjustesState extends State<Ajustes> {
       });
     });*/
     UserServices().initKeys();
+  }
+
+  void _onThemeChange(String tag, bool value) {
+    setState(() {
+      UserServices().saveSwitchState(tag, value);
+      Provider.of<ThemeHandler>(context, listen: false).toggleTheme();
+    });
   }
 
   void _onSwitchChange(String tag, bool value) {
@@ -62,29 +66,6 @@ class _AjustesState extends State<Ajustes> {
       });
       ;
     }
-
-    /*
-    setState(() {
-      _economia = value;
-      if (value) {
-        OneSignal.shared.sendTags({"economia": "true"});
-      } else {
-        OneSignal.shared.deleteTags(["economia"]);
-      }
-    });*/
-  }
-
-  void _onPoliciacoChanged(bool value) {
-    UserServices().saveSwitchState("policia", value);
-    /*
-    setState(() {
-      _policiaco = value;
-      if (value) {
-        OneSignal.shared.sendTags({"policiaco": "true"});
-      } else {
-        OneSignal.shared.deleteTags(["policiaco"]);
-      }
-    });*/
   }
 
   @override
@@ -112,7 +93,10 @@ class _AjustesState extends State<Ajustes> {
                               "Apariencia",
                               style: GoogleFonts.roboto(
                                   textStyle: TextStyle(
-                                      fontSize: 20, color: Colors.grey[600])),
+                                      fontSize: 20,
+                                      color: theme.theme == ThemeData.dark()
+                                          ? Colors.grey[300]
+                                          : Colors.grey[600])),
                             ),
                             alignment: Alignment.centerLeft),
                         SizedBox(
@@ -128,9 +112,9 @@ class _AjustesState extends State<Ajustes> {
                               ListTile(
                                 title: Text("Modo Oscuro"),
                                 trailing: Switch(
-                                    value: theme.theme == ThemeData.dark(),
+                                    value: snapshot.data!["darkMode"],
                                     onChanged: (value) {
-                                      theme.toggleTheme();
+                                      _onThemeChange("darkMode", value);
                                     }),
                               ),
                             ],
@@ -151,7 +135,10 @@ class _AjustesState extends State<Ajustes> {
                               "Preferencias",
                               style: GoogleFonts.roboto(
                                   textStyle: TextStyle(
-                                      fontSize: 20, color: Colors.grey[600])),
+                                      fontSize: 20,
+                                      color: theme.theme == ThemeData.dark()
+                                          ? Colors.grey[300]
+                                          : Colors.grey[600])),
                             ),
                             alignment: Alignment.centerLeft),
                         SizedBox(

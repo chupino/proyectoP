@@ -36,7 +36,7 @@ class MyApp extends StatelessWidget {
       builder: (context, child) {
         final theme = Provider.of<ThemeHandler>(context);
         return MaterialApp(
-          theme: theme.theme,
+          theme: Provider.of<ThemeHandler>(context).theme,
           routes: {
             '/home': (context) => Home(),
             '/search': (context) => Search(),

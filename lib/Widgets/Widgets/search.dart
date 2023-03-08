@@ -19,6 +19,7 @@ class _SearchState extends State<Search> {
   final FocusNode _searchFocusNode = FocusNode();
   @override
   Widget build(BuildContext context) {
+    final theme = Provider.of<ThemeHandler>(context);
     return Scaffold(
       appBar: const appBar(
         tittle: "EXPLORAR",
@@ -45,7 +46,9 @@ class _SearchState extends State<Search> {
                   borderSide: BorderSide.none,
                 ),
                 filled: true,
-                fillColor: Colors.grey[300],
+                fillColor: theme.theme == ThemeData.dark()
+                    ? Colors.grey[900]
+                    : Colors.grey[300],
                 suffixIcon: IconButton(
                   icon: Icon(Icons.search),
                   onPressed: () {

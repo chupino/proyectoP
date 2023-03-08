@@ -56,7 +56,9 @@ class _searchResultState extends State<searchResult> {
                     borderSide: BorderSide.none,
                   ),
                   filled: true,
-                  fillColor: Colors.grey[300],
+                  fillColor: theme.theme == ThemeData.dark()
+                      ? Colors.grey[900]
+                      : Colors.grey[300],
                   suffixIcon: IconButton(
                     icon: Icon(Icons.search),
                     onPressed: () {

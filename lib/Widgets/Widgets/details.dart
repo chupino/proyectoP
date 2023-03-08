@@ -32,8 +32,8 @@ class _DetailsState extends State<Details> {
       content: Text('Generando...'),
       duration: Duration(seconds: 1),
     );
-    var snackBarFinal = const SnackBar(content: Text('Descargado'));
-    var snackBarSFinal = const SnackBar(content: Text('CIFRADO!'));
+    var snackBarFinal = const SnackBar(content: Text('Descargando'));
+    var snackBarSFinal = const SnackBar(content: Text('Listo'));
     ScaffoldMessenger.of(context).showSnackBar(snackBarStart);
     final args =
         ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
@@ -50,36 +50,17 @@ class _DetailsState extends State<Details> {
     Map _news = await UserServices().getArticle(url, index);
 
     final pdf = pw.Document();
-
-    final image = await NetworkAssetBundle(Uri.parse(_news["image"])).load('');
-    final String loremContent =
-        "Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Donec quam felis, ultricies nec, pellentesque eu, pretium quis, sem. Nulla consequat massa quis enim. Donec pede justo, fringilla vel, aliquet nec, vulputate eget, arcu. In enim justo, rhoncus ut, imperdiet a, venenatis vitae, justo. Nullam dictum felis eu pede mollis pretium. Integer tincidunt. Cras dapibus. Vivamus elementum semper nisi. Aenean vulputate eleifend tellus. Aenean leo ligula, porttitor eu, consequat vitae, eleifend ac, enim. Aliquam lorem ante, dapibus in, viverra quis, feugiat a, tellus.Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Donec quam felis, ultricies nec, pellentesque eu, pretium quis, sem. Nulla consequat massa quis enim. Donec pede justo, fringilla vel, aliquet nec, vulputate eget, arcu. In enim justo, rhoncus ut, imperdiet a, venenatis vitae, justo. Nullam dictum felis eu pede mollis pretium. Integer tincidunt. Cras dapibus. Vivamus elementum semper nisi. Aenean vulputate eleifend tellus. Aenean leo ligula, porttitor eu, consequat vitae, eleifend ac, enim. Aliquam lorem ante, dapibus in, viverra quis, feugiat a, tellus.Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Donec quam felis, ultricies nec, pellentesque eu, pretium quis, sem. Nulla consequat massa quis enim. Donec pede justo, fringilla vel, aliquet nec, vulputate eget, arcu. In enim justo, rhoncus ut, imperdiet a, venenatis vitae, justo. Nullam dictum felis eu pede mollis pretium. Integer tincidunt. Cras dapibus. Vivamus elementum semper nisi. Aenean vulputate eleifend tellus. Aenean leo ligula, porttitor eu, consequat vitae, eleifend ac, enim. Aliquam";
-    /*List<pw.Widget> divideTexto(String texto, int longitudMaxima) {
-      List<String> partes = [];
-      int inicio = 0;
-      int fin = longitudMaxima;
-      while (inicio < texto.length) {
-        if (fin >= texto.length) {
-          fin = texto.length;
-        }
-        partes.add(texto.substring(inicio, fin));
-        inicio = fin + 1;
-        fin = inicio + longitudMaxima;
-      }
-
-      //print(loremContent.length);
-      //print(partes[97].length);
-      List<pw.Widget> myTextWidgets =
-          partes.map((item) => pw.Text(item, style: myStyleContent)).toList();
-      //print(myTextWidgets.runtimeType);
-      return myTextWidgets;
-    }*/
+    final image;
+    _news["image"] != null
+        ? image =
+            await NetworkAssetBundle(Uri.parse(_news["image"] ?? "")).load('')
+        : image = "";
 
     String prueba =
         "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec dictum non sem vel interdum. Maecenas bibendum nisi a elementum semper. Nunc id tellus a dolor ultricies dapibus non ac arcu. Nulla convallis odio sed venenatis porta. Mauris magna augue, molestie quis ipsum aliquam, pharetra laoreet massa. Quisque quis elit euismod, sagittis metus eu, porttitor justo. Fusce tempus arcu nisi, quis maximus erat hendrerit sit amet. Proin pulvinar pellentesque tellus ut suscipit. Cras non efficitur lorem. Aliquam sed volutpat turpis.Vivamus sed leo nec nibh convallis lacinia eu sed felis. Vestibulum id risus enim. Cras sed lacus ipsum. Integer leo erat, sagittis quis diam at, sodales suscipit ligula. Sed vel volutpat dui. Donec non lectus vel enim feugiat porta. Ut vitae augue a est semper vehicula at interdum sapien. Nam fermentum risus at imperdiet pretium. Praesent sit amet fermentum risus. Morbi sit amet faucibus massa, quis interdum tortor.Curabitur interdum euismod condimentum. Cras eget augue nunc. Quisque cursus varius purus, in convallis sem ultricies at. Donec ac scelerisque arcu, et facilisis libero. Nullam iaculis velit a ex ullamcorper, at gravida augue dapibus. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia curae; Sed vel lorem ac elit eleifend efficitur sit amet eget nunc. In eu nibh sed quam egestas condimentum.Curabitur tempor non mauris sed tincidunt. Etiam eu pellentesque nisl. Sed eget auctor dui, ac feugiat nisl. Maecenas aliquet convallis lorem, ac varius risus maximus vel. Nunc dapibus tortor turpis, sit amet auctor orci fringilla eget. Phasellus quis est varius, placerat ex nec, tristique nunc. Proin faucibus sodales tempus. Nulla luctus quis tellus vel rhoncus. Proin dignissim id nisi at ornare. Aenean tempor id nunc non tempor. Fusce sollicitudin ligula nec sollicitudin tincidunt. Sed sed malesuada libero.Aenean eu elementum lectus. Duis leo diam, sollicitudin quis urna viverra, auctor rhoncus velit. Phasellus sit amet vulputate sapien. Duis luctus orci nisl, eget venenatis leo fermentum rutrum. Duis cursus tincidunt hendrerit. Aliquam erat volutpat. Fusce risus mauris, egestas eget facilisis tincidunt, rhoncus sed ante. Integer laoreet risus sem, nec blandit urna convallis et. Fusce dolor dolor, scelerisque id elit at, gravida fringilla orci. Donec blandit pellentesque libero, ac finibus diam iaculis eget.In quam purus, luctus bibendum scelerisque non, interdum ac eros. Donec pharetra dui sit amet sem pellentesque sollicitudin. Nullam non tortor id ipsum consectetur sollicitudin non ac nisi. Suspendisse libero odio, efficitur ut eros et, varius vulputate odio. Fusce ante orci, ultrices vel tristique eu, facilisis a ligula. Quisque malesuada ex a turpis molestie pulvinar. Fusce id ligula ipsum. Proin tincidunt arcu eros. Mauris vehicula mi ligula, vel tempor arcu dictum ut. Cras luctus, libero in tempus sodales, ipsum nulla accumsan nunc, nec tincidunt orci massa ut mi. Vestibulum tincidunt nulla sit amet accumsan fringilla.Nunc sed mattis lectus. Nulla accumsan elit ut orci bibendum, scelerisque imperdiet ligula dignissim. Donec auctor aliquet tellus. Aliquam erat volutpat. Nunc ornare orci augue, ac efficitur purus interdum quis. Vestibulum eu massa vitae justo dignissim iaculis a quis purus. Morbi sagittis, nisl.";
 
     var wrapper = TextWrapper(width: PdfPageFormat.a4.width.round());
-    List<String> lines = wrapper.wrap(prueba);
+    List<String> lines = wrapper.wrap(_news["content"]);
     print(lines.length);
     List<pw.Widget> _myTextWidgets =
         lines.map((item) => pw.Text(item, style: myStyleContent)).toList();
@@ -95,7 +76,9 @@ class _DetailsState extends State<Details> {
                     runSpacing: 0,
                     children: [
                       pw.Row(children: [
-                        pw.Text(_news["autor"], style: myStyle),
+                        _news["autor"] != ""
+                        ?pw.Text(_news["autor"], style: myStyle)
+                        :pw.Container(),
                         pw.SizedBox(width: 10),
                         pw.Text(_news["date"], style: myStyle)
                       ]),
@@ -103,7 +86,9 @@ class _DetailsState extends State<Details> {
                       pw.SizedBox(height: 10),
                       pw.Text(_news["description"], style: myStyleDesc),
                       pw.SizedBox(height: 10),
-                      pw.Image(pw.MemoryImage(image.buffer.asUint8List())),
+                      image != ""
+                          ? pw.Image(pw.MemoryImage(image.buffer.asUint8List()))
+                          : pw.Container(),
                       ..._myTextWidgets
                     ],
                   ),

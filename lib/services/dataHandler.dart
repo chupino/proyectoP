@@ -6,10 +6,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 class UserServices {
   Future<List> getTitles() async {
-    //final url =
-    "https://newsapi.org/v2/top-headlines?country=ar&category=business&apiKey=0d27d591742945da896d34927af6a3b0";
     final url =
-        "https://newsapi.org/v2/everything?q=tesla&language=es&from=2023-01-22&sortBy=publishedAt&apiKey=0d27d591742945da896d34927af6a3b0";
+        "https://newsapi.org/v2/everything?q=tesla&language=es&from=2023-02-10&sortBy=publishedAt&apiKey=5025449ded9546259210dcca8c7a5531";
     Uri urlUri = Uri.parse(url);
     final response = await http.get(urlUri);
     if (response.statusCode == 200) {
@@ -33,7 +31,7 @@ class UserServices {
 
   Future<Map> getNew(int index) async {
     final url =
-        "https://newsapi.org/v2/everything?q=tesla&from=2023-02-22&sortBy=publishedAt&apiKey=0d27d591742945da896d34927af6a3b0";
+        "https://newsapi.org/v2/everything?q=tesla&from=2023-02-10&sortBy=publishedAt&apiKey=5025449ded9546259210dcca8c7a5531";
     Uri urlUri = Uri.parse(url);
     final response = await http.get(urlUri);
     if (response.statusCode == 200) {
@@ -68,7 +66,7 @@ class UserServices {
 
   Future<List> searchTitle(String title) async {
     final url =
-        "https://newsapi.org/v2/everything?qInTitle='{$title}'&language=es&from=2023-01-22&sortBy=publishedAt&apiKey=0d27d591742945da896d34927af6a3b0";
+        "https://newsapi.org/v2/everything?qInTitle='{$title}'&language=es&from=2023-02-10&sortBy=publishedAt&apiKey=5025449ded9546259210dcca8c7a5531";
     Uri uri = Uri.parse(url);
     final response = await http.get(uri);
     if (response.statusCode == 200) {
@@ -148,6 +146,9 @@ class UserServices {
     if (prefs.getBool("economia") == null) {
       prefs.setBool("economia", false);
     }
+    if (prefs.getBool("darkMode") == null) {
+      prefs.setBool("darkMode", false);
+    }
     if (prefs.getBool("policia") == null) {
       prefs.setBool("policia", false);
     }
@@ -167,7 +168,7 @@ class UserServices {
 
   Future<List> getArticlesforGenre(String genre) async {
     final url =
-        "https://newsapi.org/v2/everything?q=$genre&language=es&from=2023-01-22&sortBy=publishedAt&apiKey=0d27d591742945da896d34927af6a3b0";
+        "https://newsapi.org/v2/everything?q=$genre&language=es&from=2023-02-10&sortBy=publishedAt&apiKey=5025449ded9546259210dcca8c7a5531";
     Uri uri = Uri.parse(url);
     final response = await http.get(uri);
     if (response.statusCode == 200) {
@@ -196,12 +197,14 @@ class UserServices {
     final response = await http.get(uri);
     if (response.statusCode == 200) {
       var data = jsonDecode(response.body) as List;
-      final titles = data.map((e) => {
-            "id": e["id"],
-            "title": e["title"],
-            "content": e["content"],
-          }) as Map;
-      return titles;
+      final titles = data
+          .map((e) => {
+                "id": e["id"],
+                "title": e["title"],
+                "content": e["content"],
+              })
+          .toList();
+      return titles[0];
     } else {
       print("error");
       return {};
