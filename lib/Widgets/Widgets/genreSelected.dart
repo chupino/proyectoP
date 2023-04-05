@@ -37,50 +37,50 @@ class _GenreSelectedState extends State<GenreSelected> {
         if (snapshot.hasData && snapshot.data!.isNotEmpty) {
           return ListView.builder(
             itemBuilder: (context, index) {
-              return GestureDetector(
-                onTap: () {
-                  //print(_searchResults[index]["url"]);
-                  print(index);
-                  Navigator.pushNamed(
-                    context,
-                    "/details",
-                    arguments: {
-                      "index": index,
-                      "url": snapshot.data![index]["url"]
-                    },
-                  );
-                  print(snapshot.data![index].runtimeType);
-                },
-                child: Container(
-                  decoration: BoxDecoration(
-                    color: theme.theme == ThemeData.dark()
-                        ? Colors.grey[800]
-                        : Colors.grey[300],
-                    border: Border(
-                      top: BorderSide(
-                          width: 1.0,
-                          color: theme.theme == ThemeData.dark()
-                              ? Colors.grey
-                              : Colors.black),
-                      bottom: BorderSide(
-                          width: 1.0,
-                          color: theme.theme == ThemeData.dark()
-                              ? Colors.white
-                              : Colors.black),
+              return Container(
+                padding: EdgeInsets.symmetric(horizontal: 10),
+                child: GestureDetector(
+                  onTap: () {
+                    print(index);
+                    Navigator.pushNamed(
+                      context,
+                      "/details",
+                      arguments: {
+                        "index": index,
+                        "url": snapshot.data![index]["url"]
+                      },
+                    );
+                    print(snapshot.data![index].runtimeType);
+                  },
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: Theme.of(context).canvasColor,
+                      border: Border(
+                        top: BorderSide(
+                            width: 1.0,
+                            color: theme.theme == ThemeData.dark()
+                                ? Colors.grey
+                                : Colors.black),
+                        bottom: BorderSide(
+                            width: 1.0,
+                            color: theme.theme == ThemeData.dark()
+                                ? Colors.white
+                                : Colors.black),
+                      ),
                     ),
+                    margin: EdgeInsets.symmetric(vertical: 5),
+                    padding: EdgeInsets.symmetric(vertical: 15, horizontal: 20),
+                    child: Column(children: [
+                      snapshot.data![index]["image"] != null
+                          ? Image.network(snapshot.data![index]["image"])
+                          : Container(),
+                      Text(
+                        snapshot.data![index]["title"],
+                        style: GoogleFonts.notoSans(
+                            textStyle: TextStyle(fontSize: 25)),
+                      )
+                    ]),
                   ),
-                  margin: EdgeInsets.symmetric(vertical: 5),
-                  padding: EdgeInsets.symmetric(vertical: 15, horizontal: 20),
-                  child: Column(children: [
-                    snapshot.data![index]["image"] != null
-                        ? Image.network(snapshot.data![index]["image"])
-                        : Container(),
-                    Text(
-                      snapshot.data![index]["title"],
-                      style: GoogleFonts.notoSans(
-                          textStyle: TextStyle(fontSize: 25)),
-                    )
-                  ]),
                 ),
               );
             },

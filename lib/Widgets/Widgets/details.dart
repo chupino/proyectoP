@@ -24,9 +24,8 @@ class Details extends StatefulWidget {
 }
 
 class _DetailsState extends State<Details> {
-  //Map? news;
-  double _fontSize = 18.0;
-
+  double _fontSize = 19.099 / 1.618;
+/*
   Future<void> _createPDF() async {
     var snackBarStart = const SnackBar(
       content: Text('Generando...'),
@@ -113,7 +112,7 @@ class _DetailsState extends State<Details> {
     encryptedFile.writeAsBytesSync(encrypted.bytes);
 
     ScaffoldMessenger.of(context).showSnackBar(snackBarSFinal);
-  }
+  }*/
 
   @override
   Widget build(BuildContext context) {
@@ -121,15 +120,6 @@ class _DetailsState extends State<Details> {
       appBar: AppBar(title: const Text("Noticias"), actions: [
         IconButton(
             onPressed: () {
-              _createPDF();
-            },
-            icon: const Icon(
-              Icons.download,
-              size: 35,
-            )),
-        IconButton(
-            onPressed: () {
-              //_showFontSizeDialog(context);
               _showFontSizePickerDialog();
             },
             icon: const Icon(
@@ -183,6 +173,8 @@ class _DetailsState extends State<Details> {
                           : Container(),
                       snapshot.data!["date"] != null
                           ? Container(
+                              padding: EdgeInsets.symmetric(
+                                  horizontal: 30, vertical: 10),
                               alignment: Alignment.bottomLeft,
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -192,7 +184,8 @@ class _DetailsState extends State<Details> {
                                       ? Text(
                                           snapshot.data!["autor"],
                                           style: const TextStyle(
-                                              fontSize: 22, color: Colors.grey),
+                                            fontSize: 18,
+                                          ),
                                         )
                                       : Container(),
                                   const SizedBox(
@@ -202,7 +195,8 @@ class _DetailsState extends State<Details> {
                                       ? Text(
                                           snapshot.data!["date"],
                                           style: const TextStyle(
-                                              fontSize: 23, color: Colors.grey),
+                                            fontSize: 18,
+                                          ),
                                         )
                                       : Container()
                                 ],
@@ -211,13 +205,14 @@ class _DetailsState extends State<Details> {
                           : Container(),
                       snapshot.data!["title"] != null
                           ? Container(
-                              padding: const EdgeInsets.symmetric(vertical: 15),
+                              padding: EdgeInsets.symmetric(
+                                  horizontal: 30, vertical: 15),
                               child: Column(
                                 children: [
                                   Text(
                                     snapshot.data!["title"],
                                     style: const TextStyle(
-                                        fontSize: 35,
+                                        fontSize: 50 / 1.618,
                                         fontWeight: FontWeight.bold,
                                         fontFamily: "Georgia"),
                                   ),
@@ -227,7 +222,7 @@ class _DetailsState extends State<Details> {
                                   Text(
                                     snapshot.data!["description"],
                                     style: const TextStyle(
-                                        fontSize: 25,
+                                        fontSize: 30.902 / 1.618,
                                         fontWeight: FontWeight.w700,
                                         fontFamily: "Georgia"),
                                   ),

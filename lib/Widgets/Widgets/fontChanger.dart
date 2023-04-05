@@ -30,11 +30,9 @@ class _FontSizePickerDialogState extends State<FontSizePickerDialog> {
         padding: EdgeInsets.zero,
         child: Slider(
           value: _fontSize,
-          min: 15,
-          max: 25,
-          divisions: 5,
-          label: _fontSize.round().toString(),
-          
+          min: 19.099 / 1.618,
+          max: 19.099,
+          divisions: 2,
           onChanged: (value) {
             setState(() {
               _fontSize = value;
@@ -47,7 +45,7 @@ class _FontSizePickerDialogState extends State<FontSizePickerDialog> {
           onPressed: () {
             Navigator.pop(context, _fontSize);
           },
-          child: Text('DONE'),
+          child: Text('LISTO'),
         )
       ],
     );

@@ -71,6 +71,7 @@ class _AjustesState extends State<Ajustes> {
   @override
   Widget build(BuildContext context) {
     final theme = Provider.of<ThemeHandler>(context);
+    final isLogged = false;
     return Scaffold(
       appBar: const appBar(
         tittle: "AJUSTES",
@@ -79,6 +80,94 @@ class _AjustesState extends State<Ajustes> {
         future: UserServices().getAllSwitchStates(),
         builder: (context, snapshot) {
           if (snapshot.hasData) {
+            return Column(
+              children: [
+                SizedBox(
+                  height: 20,
+                ),
+                ListTile(
+                  title: Text("Mi Cuenta"),
+                  subtitle: Text("Cambiar datos personales"),
+                  leading: Icon(
+                    Icons.account_circle_outlined,
+                    size: 30,
+                    color: Theme.of(context).iconTheme.color,
+                  ),
+                  trailing: Icon(Icons.arrow_right_rounded,
+                      size: 30, color: Theme.of(context).iconTheme.color),
+                  onTap: () {
+                    Navigator.pushNamed(context, "/account");
+                  },
+                ),
+                SizedBox(
+                  width: MediaQuery.of(context).size.width - 25,
+                  child: Divider(
+                    thickness:
+                        1, //opcional, para especificar el grosor de la línea
+                  ),
+                ),
+                ListTile(
+                  title: Text("Contenido Favorito"),
+                  subtitle: Text("Escoga sus noticias"),
+                  leading: Icon(Icons.favorite_outline_rounded,
+                      size: 30, color: Theme.of(context).iconTheme.color),
+                  trailing: Icon(
+                    Icons.arrow_right_rounded,
+                    size: 30,
+                    color: Theme.of(context).iconTheme.color,
+                  ),
+                  onTap: () {
+                    Navigator.pushNamed(context, "/favourites");
+                  },
+                ),
+                SizedBox(
+                  width: MediaQuery.of(context).size.width - 25,
+                  child: Divider(
+                    thickness:
+                        1, //opcional, para especificar el grosor de la línea
+                  ),
+                ),
+                ListTile(
+                  title: Text("Apariencia"),
+                  subtitle: Text("Seleccione el tema"),
+                  leading: Icon(Icons.mode_night_outlined,
+                      size: 30, color: Theme.of(context).iconTheme.color),
+                  trailing: Icon(Icons.arrow_right_rounded,
+                      size: 30, color: Theme.of(context).iconTheme.color),
+                  onTap: () {
+                    Navigator.pushNamed(context, "/themeChooser");
+                  },
+                ),
+                SizedBox(
+                  height: 50,
+                ),
+                isLogged != false
+                    ? Container()
+                    : Center(
+                        child: Wrap(
+                        crossAxisAlignment: WrapCrossAlignment.center,
+                        children: [
+                          Text(
+                            "No haz iniciado sesión? ",
+                            style: TextStyle(fontSize: 15),
+                          ),
+                          TextButton(
+                              onPressed: () {
+                                Navigator.pushNamed(context, "/login");
+                              },
+                              child: Text(
+                                "Hazlo ahora!",
+                                style: TextStyle(
+                                    fontSize: 15,
+                                    color: Theme.of(context).iconTheme.color,
+                                    decoration: TextDecoration.underline,
+                                    decorationThickness: 2),
+                              ))
+                        ],
+                      )),
+              ],
+            );
+
             return ListView.builder(
                 padding: EdgeInsets.symmetric(vertical: 15),
                 itemCount: 2, // número de secciones

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter/src/widgets/placeholder.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:periodico/Widgets/Fwidgets.dart';
 import 'package:periodico/services/dataHandler.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
@@ -40,35 +41,12 @@ class _searchResultState extends State<searchResult> {
           children: [
             BackButton(),
             SizedBox(width: 10),
-            Expanded(
-              child: TextField(
+            SearchBar(
+                controller: _searchController,
                 focusNode: _searchFocusNode,
                 onSubmitted: (value) {
                   updateSearchValue(value);
-                },
-                controller: _searchController,
-                decoration: InputDecoration(
-                  contentPadding:
-                      EdgeInsets.symmetric(vertical: 10.0, horizontal: 10.0),
-                  hintText: 'Buscar...',
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(25),
-                    borderSide: BorderSide.none,
-                  ),
-                  filled: true,
-                  fillColor: theme.theme == ThemeData.dark()
-                      ? Colors.grey[900]
-                      : Colors.grey[300],
-                  suffixIcon: IconButton(
-                    icon: Icon(Icons.search),
-                    onPressed: () {
-                      updateSearchValue(_searchController.text);
-                      _searchFocusNode.unfocus();
-                    },
-                  ),
-                ),
-              ),
-            ),
+                })
           ],
         ),
       ),
@@ -126,50 +104,47 @@ class _searchResultState extends State<searchResult> {
     return ListView.builder(
         itemCount: snapshot.data!.length,
         itemBuilder: (context, index) {
-          return GestureDetector(
-            onTap: () {
-              //print(_searchResults[index]["url"]);
-              print(index);
-              Navigator.pushNamed(
-                context,
-                "/details",
-                arguments: {
-                  "index": index,
-                  "url": snapshot.data![index]["url"]
-                },
-              );
-              print(snapshot.data![index].runtimeType);
-            },
-            child: Container(
-              decoration: BoxDecoration(
-                color: theme.theme == ThemeData.dark()
-                    ? Colors.grey[800]
-                    : Colors.grey[300],
-                border: Border(
-                  top: BorderSide(
+          return Container(
+            padding: EdgeInsets.symmetric(horizontal: 10),
+            child: GestureDetector(
+              onTap: () {
+                //print(_searchResults[index]["url"]);
+                print(index);
+                Navigator.pushNamed(
+                  context,
+                  "/details",
+                  arguments: {
+                    "index": index,
+                    "url": snapshot.data![index]["url"]
+                  },
+                );
+                print(snapshot.data![index].runtimeType);
+              },
+              child: Container(
+                decoration: BoxDecoration(
+                  color: Theme.of(context).canvasColor,
+                  border: Border(
+                    top: BorderSide(
                       width: 1.0,
-                      color: theme.theme == ThemeData.dark()
-                          ? Colors.grey
-                          : Colors.black),
-                  bottom: BorderSide(
+                    ),
+                    bottom: BorderSide(
                       width: 1.0,
-                      color: theme.theme == ThemeData.dark()
-                          ? Colors.white
-                          : Colors.black),
+                    ),
+                  ),
                 ),
+                margin: EdgeInsets.symmetric(vertical: 5),
+                padding: EdgeInsets.symmetric(vertical: 15, horizontal: 20),
+                child: Column(children: [
+                  snapshot.data![index]["image"] != null
+                      ? Image.network(snapshot.data![index]["image"])
+                      : Container(),
+                  Text(
+                    snapshot.data![index]["title"],
+                    style: GoogleFonts.notoSans(
+                        textStyle: TextStyle(fontSize: 25)),
+                  )
+                ]),
               ),
-              margin: EdgeInsets.symmetric(vertical: 5),
-              padding: EdgeInsets.symmetric(vertical: 15, horizontal: 20),
-              child: Column(children: [
-                snapshot.data![index]["image"] != null
-                    ? Image.network(snapshot.data![index]["image"])
-                    : Container(),
-                Text(
-                  snapshot.data![index]["title"],
-                  style:
-                      GoogleFonts.notoSans(textStyle: TextStyle(fontSize: 25)),
-                )
-              ]),
             ),
           );
         });

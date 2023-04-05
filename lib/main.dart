@@ -1,17 +1,26 @@
+
 import 'package:flutter/material.dart';
 import 'package:intl/date_symbol_data_local.dart';
+import 'package:periodico/Widgets/Widgets/account.dart';
 import 'package:periodico/Widgets/Widgets/details.dart';
 import 'package:periodico/Widgets/Widgets/downloads.dart';
+import 'package:periodico/Widgets/Widgets/favouriteTags.dart';
 import 'package:periodico/Widgets/Widgets/genreSelected.dart';
 import 'package:periodico/Widgets/Widgets/home.dart';
+import 'package:periodico/Widgets/Widgets/login.dart';
 import 'package:periodico/Widgets/Widgets/pdfViewer.dart';
 import 'package:periodico/Widgets/Widgets/search.dart';
 import 'package:periodico/Widgets/Widgets/searchResult.dart';
 import 'package:periodico/Widgets/Widgets/settings.dart';
 import 'package:periodico/Widgets/Widgets/test.dart';
+import 'package:periodico/Widgets/Widgets/themeChooser.dart';
 import 'package:periodico/providers/ThemeHandler.dart';
 import 'package:provider/provider.dart';
 import 'package:onesignal_flutter/onesignal_flutter.dart';
+
+
+
+
 
 void main() async {
   await initializeDateFormatting();
@@ -28,13 +37,28 @@ void main() async {
   });
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
+  static final GlobalKey<_MyAppState> myAppKey = GlobalKey<_MyAppState>();
+  @override
+  _MyAppState createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+  ThemeMode _themeMode = ThemeMode.light;
+  void _toggleTheme() {
+    setState(() {
+      _themeMode =
+          _themeMode == ThemeMode.light ? ThemeMode.dark : ThemeMode.light;
+          
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider(
       create: (context) => ThemeHandler(),
       builder: (context, child) {
-        final theme = Provider.of<ThemeHandler>(context);
+        //final theme = Provider.of<ThemeHandler>(context);
         return MaterialApp(
           theme: Provider.of<ThemeHandler>(context).theme,
           routes: {
@@ -47,6 +71,10 @@ class MyApp extends StatelessWidget {
             '/searchResult': (context) => searchResult(),
             '/genreSelected': (context) => GenreSelected(),
             '/notification': (context) => testScreen(),
+            '/account': (context) => Account(),
+            '/favourites': (context) => Favourite(),
+            '/themeChooser': (context) => ThemeChooser(),
+            '/login': (context) => LoginPage(),
           },
           initialRoute: '/home',
           debugShowCheckedModeBanner: false,
