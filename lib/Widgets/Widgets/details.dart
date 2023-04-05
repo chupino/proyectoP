@@ -149,7 +149,7 @@ class _DetailsState extends State<Details> {
     }
   }
 
-  Container NewDetails() {
+  FutureBuilder NewDetails() {
     final args =
         ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
     final index = args['index'] as int;
@@ -157,97 +157,93 @@ class _DetailsState extends State<Details> {
     print("aa" + url);
     print("bb $index");
     print(UserServices().getArticle(url, index));
-    return Container(
-      child: Center(
-        child: SingleChildScrollView(
-            child: Column(
-          children: [
-            FutureBuilder(
+    return FutureBuilder(
               future: UserServices().getArticle(url, index),
               builder: (context, snapshot) {
                 if (snapshot.hasData) {
-                  return Column(
-                    children: [
-                      snapshot.data!["image"] != null
-                          ? Image.network(snapshot.data!["image"])
-                          : Container(),
-                      snapshot.data!["date"] != null
-                          ? Container(
-                              padding: EdgeInsets.symmetric(
-                                  horizontal: 30, vertical: 10),
-                              alignment: Alignment.bottomLeft,
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                mainAxisAlignment: MainAxisAlignment.start,
-                                children: [
-                                  snapshot.data!["autor"] != null
-                                      ? Text(
-                                          snapshot.data!["autor"],
-                                          style: const TextStyle(
-                                            fontSize: 18,
-                                          ),
-                                        )
-                                      : Container(),
-                                  const SizedBox(
-                                    height: 5,
-                                  ),
-                                  snapshot.data!["date"] != null
-                                      ? Text(
-                                          snapshot.data!["date"],
-                                          style: const TextStyle(
-                                            fontSize: 18,
-                                          ),
-                                        )
-                                      : Container()
-                                ],
-                              ),
-                            )
-                          : Container(),
-                      snapshot.data!["title"] != null
-                          ? Container(
-                              padding: EdgeInsets.symmetric(
-                                  horizontal: 30, vertical: 15),
-                              child: Column(
-                                children: [
-                                  Text(
-                                    snapshot.data!["title"],
-                                    style: const TextStyle(
-                                        fontSize: 50 / 1.618,
-                                        fontWeight: FontWeight.bold,
-                                        fontFamily: "Georgia"),
-                                  ),
-                                  const SizedBox(
-                                    height: 10,
-                                  ),
-                                  Text(
-                                    snapshot.data!["description"],
-                                    style: const TextStyle(
-                                        fontSize: 30.902 / 1.618,
-                                        fontWeight: FontWeight.w700,
-                                        fontFamily: "Georgia"),
-                                  ),
-                                  const SizedBox(
-                                    height: 7,
-                                  ),
-                                  Text(snapshot.data!["content"],
-                                      style: TextStyle(
-                                          fontSize: _fontSize,
-                                          fontWeight: FontWeight.w400,
-                                          fontFamily: "Georgia"))
-                                ],
-                              ),
-                            )
-                          : Container()
-                    ],
+                  return SingleChildScrollView(
+                    child: Column(
+                      children: [
+                        snapshot.data!["image"] != null
+                            ? Image.network(snapshot.data!["image"])
+                            : Container(),
+                        snapshot.data!["date"] != null
+                            ? Container(
+                                padding: EdgeInsets.symmetric(
+                                    horizontal: 30, vertical: 10),
+                                alignment: Alignment.bottomLeft,
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  children: [
+                                    snapshot.data!["autor"] != null
+                                        ? Text(
+                                            snapshot.data!["autor"],
+                                            style: const TextStyle(
+                                              fontSize: 18,
+                                            ),
+                                          )
+                                        : Container(),
+                                    const SizedBox(
+                                      height: 5,
+                                    ),
+                                    snapshot.data!["date"] != null
+                                        ? Text(
+                                            snapshot.data!["date"],
+                                            style: const TextStyle(
+                                              fontSize: 18,
+                                            ),
+                                          )
+                                        : Container()
+                                  ],
+                                ),
+                              )
+                            : Container(),
+                        snapshot.data!["title"] != null
+                            ? Container(
+                                padding: EdgeInsets.symmetric(
+                                    horizontal: 30, vertical: 15),
+                                child: Column(
+                                  children: [
+                                    Text(
+                                      snapshot.data!["title"],
+                                      style: const TextStyle(
+                                          fontSize: 50 / 1.618,
+                                          fontWeight: FontWeight.bold,
+                                          fontFamily: "Georgia"),
+                                    ),
+                                    const SizedBox(
+                                      height: 10,
+                                    ),
+                                    Text(
+                                      snapshot.data!["description"],
+                                      style: const TextStyle(
+                                          fontSize: 30.902 / 1.618,
+                                          fontWeight: FontWeight.w700,
+                                          fontFamily: "Georgia"),
+                                    ),
+                                    const SizedBox(
+                                      height: 7,
+                                    ),
+                                    Text(snapshot.data!["content"],
+                                        style: TextStyle(
+                                            fontSize: _fontSize,
+                                            fontWeight: FontWeight.w400,
+                                            fontFamily: "Georgia"))
+                                  ],
+                                ),
+                              )
+                            : Container()
+                      ],
+                    ),
                   );
                 } else {
                   return const Center(child: CircularProgressIndicator());
                 }
               },
-            )
-          ],
-        )),
-      ),
-    );
+            );
+          
+      
+
   }
 }
