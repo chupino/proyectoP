@@ -4,7 +4,9 @@ import 'dart:typed_data';
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:onesignal_flutter/onesignal_flutter.dart';
+import 'package:pdf_render/pdf_render_widgets.dart';
 import 'package:periodico/services/dataHandler.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -425,6 +427,7 @@ class _HomePageState extends State<Home> {
                       itemCount: snapshot.data!.length + 1,
                       itemBuilder: ((context, index) {
                         if (index == 0) {
+                          var controller;
                           return GestureDetector(
                             onTap: (() {
                               DefaultTabController.of(context).index = 1;
@@ -435,7 +438,7 @@ class _HomePageState extends State<Home> {
                             child: Container(
                               margin: const EdgeInsets.symmetric(vertical: 5),
                               padding:
-                                  const EdgeInsets.symmetric(vertical: 100),
+                                  const EdgeInsets.symmetric(vertical: 10),
                               decoration: BoxDecoration(
                                 color: Theme.of(context).canvasColor,
                                 border: Border(
@@ -452,9 +455,18 @@ class _HomePageState extends State<Home> {
                               child: Column(
                                 children: [
                                   //Image.memory(snapshot.data![0]["bytes"]),
-                                  Text(
+                                  /*Text(
                                     "TITULAR",
                                     style: TextStyle(fontSize: 40),
+                                  ),*/
+                                  Container(
+                                    height: 500,
+                                    width: 360,
+                                    padding: EdgeInsets.all(0),
+                                    color: Colors.white,
+                                    child: PdfViewer.openFutureFile(() async=> (await DefaultCacheManager().getSingleFile("https://ifj.org/fileadmin/user_upload/Fake_News_-_FIP_AmLat.pdf")).path,
+                                    viewerController: controller,
+                                    params: const PdfViewerParams(padding: 0)),
                                   )
                                 ],
                               ),
