@@ -1,5 +1,6 @@
 
 
+import 'dart:io';
 import 'dart:typed_data';
 import 'dart:ui';
 
@@ -10,8 +11,9 @@ import 'package:pdf_render/pdf_render_widgets.dart';
 import 'package:periodico/services/dataHandler.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'package:pdf_render/pdf_render.dart';
+import 'package:pdf_render/pdf_render.dart' as pr;
 import 'package:http/http.dart' as http;
+import 'package:encrypt/encrypt.dart' as cy;
 
 
 import '../../providers/ThemeHandler.dart';
@@ -24,15 +26,42 @@ class Home extends StatefulWidget {
 
 class _HomePageState extends State<Home> {
   int _selectedIndex = 0;
-  late final imageBytesThumbnail;
+  late File documentPDF;
   final TextEditingController _textController = TextEditingController();
-  
+  late final bits;
   bool isLoading=true;
+  
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) => initPlatFormState());
+    DownloadPDFforThumbanail();
+    
+  }
+
+  void DownloadPDFforThumbanail () async{
+    /*
+    documentPDF=await DefaultCacheManager().getSingleFile("https://ifj.org/fileadmin/user_upload/Fake_News_-_FIP_AmLat.pdf");
+    
+    print(documentPDF.path);
+    
+    final key = cy.Key.fromUtf8('my 32 length keymy 32 length key');
+    final iv = cy.IV.fromLength(16);
+    final encrypter = cy.Encrypter(cy.AES(key));
+    final pdfBytes = documentPDF.readAsBytesSync();
+    final encrypted = encrypter.encryptBytes(pdfBytes, iv: iv);
+    final encryptedFilePath = documentPDF.path;
+    final encryptedFile = File(encryptedFilePath);
+    */
+    final response=await http.get(Uri.parse("https://ifj.org/fileadmin/user_upload/Fake_News_-_FIP_AmLat.pdf"));
+    var data=response.bodyBytes;
+    bits=data;
+    setState(() {
+      isLoading=false;
+    });
+    print(data);
+    
   }
 
   @override
@@ -459,12 +488,13 @@ class _HomePageState extends State<Home> {
                                     "TITULAR",
                                     style: TextStyle(fontSize: 40),
                                   ),*/
+                                  isLoading?CircularProgressIndicator():
                                   Container(
                                     height: 500,
                                     width: 360,
                                     padding: EdgeInsets.all(0),
                                     color: Colors.white,
-                                    child: PdfViewer.openFutureFile(() async=> (await DefaultCacheManager().getSingleFile("https://ifj.org/fileadmin/user_upload/Fake_News_-_FIP_AmLat.pdf")).path,
+                                    child: PdfViewer.openData( bits,
                                     viewerController: controller,
                                     params: const PdfViewerParams(padding: 0)),
                                   )
