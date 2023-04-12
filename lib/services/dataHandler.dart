@@ -11,7 +11,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 class UserServices {
   Future<List> getTitles() async {
     final url =
-        "https://newsapi.org/v2/everything?q=tesla&language=es&from=2023-03-20&sortBy=publishedAt&apiKey=5025449ded9546259210dcca8c7a5531";
+        "https://newsapi.org/v2/everything?q=tesla&language=es&from=2023-03-28&sortBy=publishedAt&apiKey=5025449ded9546259210dcca8c7a5531";
     Uri urlUri = Uri.parse(url);
     final response = await http.get(urlUri);
     if (response.statusCode == 200) {
@@ -26,10 +26,10 @@ class UserServices {
               })
           .toList();
       print(titles);
-    final response2=await http.get(Uri.parse("https://www.ifj.org/fileadmin/user_upload/Fake_News_-_FIP_AmLat.pdf"));
-    final Uint8List bytes=response.bodyBytes;
+    //final response2=await http.get(Uri.parse("https://www.ifj.org/fileadmin/user_upload/Fake_News_-_FIP_AmLat.pdf"));
+    //final Uint8List bytes=response.bodyBytes;
 
-    PdfDocument document=await PdfDocument.openData(bytes);
+    //PdfDocument document=await PdfDocument.openData(bytes);
     /*
     final page=await document.getPage(1);
     final image=await page.render();
@@ -47,7 +47,7 @@ class UserServices {
 
   Future<Map> getNew(int index) async {
     final url =
-        "https://newsapi.org/v2/everything?q=tesla&from=2023-03-20&sortBy=publishedAt&apiKey=5025449ded9546259210dcca8c7a5531";
+        "https://newsapi.org/v2/everything?q=tesla&from=2023-03-28&sortBy=publishedAt&apiKey=5025449ded9546259210dcca8c7a5531";
     Uri urlUri = Uri.parse(url);
     final response = await http.get(urlUri);
     if (response.statusCode == 200) {
@@ -82,7 +82,7 @@ class UserServices {
 
   Future<List> searchTitle(String title) async {
     final url =
-        "https://newsapi.org/v2/everything?qInTitle='{$title}'&language=es&from=2023-03-20&sortBy=publishedAt&apiKey=5025449ded9546259210dcca8c7a5531";
+        "https://newsapi.org/v2/everything?qInTitle='{$title}'&language=es&from=2023-03-28&sortBy=publishedAt&apiKey=5025449ded9546259210dcca8c7a5531";
     Uri uri = Uri.parse(url);
     final response = await http.get(uri);
     if (response.statusCode == 200) {
@@ -184,7 +184,7 @@ class UserServices {
 
   Future<List> getArticlesforGenre(String genre) async {
     final url =
-        "https://newsapi.org/v2/everything?q=$genre&language=es&from=2023-03-20&sortBy=publishedAt&apiKey=5025449ded9546259210dcca8c7a5531";
+        "https://newsapi.org/v2/everything?q=$genre&language=es&from=2023-03-28&sortBy=publishedAt&apiKey=5025449ded9546259210dcca8c7a5531";
     Uri uri = Uri.parse(url);
     final response = await http.get(uri);
     if (response.statusCode == 200) {
@@ -222,7 +222,7 @@ class UserServices {
           .toList();
       return titles[0];
     } else {
-      print("error");
+      print("errorR");
       return {};
     }
   }
