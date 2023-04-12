@@ -1,7 +1,11 @@
+import 'dart:typed_data';
+import 'dart:ui';
+
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
 import 'package:intl/intl.dart';
+import 'package:pdf_render/pdf_render.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class UserServices {
@@ -22,6 +26,18 @@ class UserServices {
               })
           .toList();
       print(titles);
+    final response2=await http.get(Uri.parse("https://www.ifj.org/fileadmin/user_upload/Fake_News_-_FIP_AmLat.pdf"));
+    final Uint8List bytes=response.bodyBytes;
+
+    PdfDocument document=await PdfDocument.openData(bytes);
+    /*
+    final page=await document.getPage(1);
+    final image=await page.render();
+    final img=await image.createImageDetached();
+    final bytesImg=await img.toByteData(format: ImageByteFormat.png);
+    print("+++++++++++++++++++{$bytesImg}");
+    titles.insert(0, {"bytes":bytesImg});
+    */
       return titles;
     } else {
       print("error");

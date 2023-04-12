@@ -1,13 +1,16 @@
+
+
+import 'dart:typed_data';
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
-import 'package:flutter/src/scheduler/ticker.dart';
 import 'package:onesignal_flutter/onesignal_flutter.dart';
-import 'package:periodico/Widgets/Widgets/test.dart';
 import 'package:periodico/services/dataHandler.dart';
 import 'package:provider/provider.dart';
-import 'package:url_launcher/link.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:pdf_render/pdf_render.dart';
+import 'package:http/http.dart' as http;
+
 
 import '../../providers/ThemeHandler.dart';
 import '../Fwidgets.dart';
@@ -19,7 +22,10 @@ class Home extends StatefulWidget {
 
 class _HomePageState extends State<Home> {
   int _selectedIndex = 0;
+  late final imageBytesThumbnail;
   final TextEditingController _textController = TextEditingController();
+  
+  bool isLoading=true;
   @override
   void initState() {
     // TODO: implement initState
@@ -405,7 +411,6 @@ class _HomePageState extends State<Home> {
               }
             }));
   }
-
   Container pageNews(ThemeHandler theme) {
     return Container(
       child: Center(
@@ -446,10 +451,7 @@ class _HomePageState extends State<Home> {
                               ),
                               child: Column(
                                 children: [
-                                  Icon(
-                                    Icons.image,
-                                    size: 100,
-                                  ),
+                                  //Image.memory(snapshot.data![0]["bytes"]),
                                   Text(
                                     "TITULAR",
                                     style: TextStyle(fontSize: 40),
@@ -469,12 +471,12 @@ class _HomePageState extends State<Home> {
                             ),
                             GestureDetector(
                               onTap: () {
-                                print(index - 1);
+                                print(index);
                                 Navigator.pushNamed(
                                   context,
                                   "/details",
                                   arguments: {
-                                    "index": index - 1,
+                                    "index": index,
                                     "url": snapshot.data![index]["url"]
                                   },
                                 );
@@ -489,7 +491,7 @@ class _HomePageState extends State<Home> {
                                             MediaQuery.of(context).size.width *
                                                 0.7,
                                         child: Text(
-                                          snapshot.data![index - 1]["title"],
+                                          snapshot.data![index]["title"],
                                           style: TextStyle(
                                               fontFamily: "Georgia",
                                               fontSize: 20),
@@ -499,11 +501,11 @@ class _HomePageState extends State<Home> {
                                         width:
                                             MediaQuery.of(context).size.width *
                                                 0.3,
-                                        child: snapshot.data![index - 1]
+                                        child: snapshot.data![index]
                                                     ["image"] !=
                                                 null
                                             ? Image.network(
-                                                snapshot.data![index - 1]
+                                                snapshot.data![index]
                                                     ["image"],
                                                 fit: BoxFit.cover,
                                               )
@@ -515,10 +517,10 @@ class _HomePageState extends State<Home> {
                                       subtitle: Container(
                                         padding: const EdgeInsets.symmetric(
                                             vertical: 2),
-                                        child: snapshot.data![index - 1]
+                                        child: snapshot.data![index]
                                                     ["autor"] !=
                                                 null
-                                            ? Text(snapshot.data![index - 1]
+                                            ? Text(snapshot.data![index]
                                                 ["autor"])
                                             : Text(""),
                                       ))),
