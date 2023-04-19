@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:http/http.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:pdf/pdf.dart';
 
 import '../Fwidgets.dart';
@@ -17,10 +18,11 @@ class Downloads extends StatefulWidget {
 class _DownloadsState extends State<Downloads> {
   Future _getFiles() async {
     final Directory directory =
-        Directory("/data/user/0/com.example.periodico/app_flutter");
+        await getApplicationDocumentsDirectory();
     List<FileSystemEntity> files = await directory.list().toList();
     print(files.runtimeType);
-    return files.where((file) => file.path.endsWith('.pdf')).toList();
+    print(directory)
+;    return files.where((file) => file.path.endsWith('.pdf')).toList();
   }
 
   @override

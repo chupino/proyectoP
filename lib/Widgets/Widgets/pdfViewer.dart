@@ -42,6 +42,7 @@ class _PdfViewerWState extends State<PdfViewerW> {
       return Uint8List.fromList(decryptedData);
     }
 
+
     return SafeArea(
         child: Scaffold(
             appBar: AppBar(

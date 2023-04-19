@@ -157,6 +157,7 @@ class _DetailsState extends State<Details> {
     print("aa" + url);
     print("bb $index");
     print(UserServices().getArticle(url, index));
+
     return FutureBuilder(
               future: UserServices().getArticle(url, index),
               builder: (context, snapshot) {
@@ -206,7 +207,7 @@ class _DetailsState extends State<Details> {
                                 child: Column(
                                   children: [
                                     Text(
-                                      snapshot.data!["title"],
+                                      snapshot.data!["title"]??Container(),
                                       style: const TextStyle(
                                           fontSize: 50 / 1.618,
                                           fontWeight: FontWeight.bold,
@@ -216,7 +217,7 @@ class _DetailsState extends State<Details> {
                                       height: 10,
                                     ),
                                     Text(
-                                      snapshot.data!["description"],
+                                      snapshot.data!["description"]??Container(),
                                       style: const TextStyle(
                                           fontSize: 30.902 / 1.618,
                                           fontWeight: FontWeight.w700,
@@ -225,7 +226,7 @@ class _DetailsState extends State<Details> {
                                     const SizedBox(
                                       height: 7,
                                     ),
-                                    Text(snapshot.data!["content"],
+                                    Text(snapshot.data!["content"]??Container(),
                                         style: TextStyle(
                                             fontSize: _fontSize,
                                             fontWeight: FontWeight.w400,

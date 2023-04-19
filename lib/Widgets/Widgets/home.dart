@@ -30,29 +30,15 @@ class _HomePageState extends State<Home> {
   int _selectedIndex = 0;
   late File documentPDF;
   final TextEditingController _textController = TextEditingController();
-  late final bits;
-  bool isLoading=true;
   
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) => initPlatFormState());
-    downloadPDFforThumbanail();
     
   }
 
-  void downloadPDFforThumbanail () async{
-    
-    final response=await http.get(Uri.parse("https://ifj.org/fileadmin/user_upload/Fake_News_-_FIP_AmLat.pdf"));
-    var data=response.bodyBytes;
-    bits=data;
-    setState(() {
-      isLoading=false;
-    });
-    print(data);
-    
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -236,7 +222,7 @@ class _HomePageState extends State<Home> {
   Container pageHeadline() {
     return Container(
       child: Center(
-        child: pdfViewers().pdfViewerBytes(bits)
+        child: pdfViewers().pdfViewerBytes()
       ),
     );
   }
@@ -380,7 +366,7 @@ class _HomePageState extends State<Home> {
                                 "/details",
                                 arguments: {
                                   "index": index,
-                                  "url": snapshot.data![index]["url"]
+                                  "url": snapshot.data![index+1]["url"]
                                 },
                               );
                             },
@@ -393,7 +379,7 @@ class _HomePageState extends State<Home> {
                                       width: MediaQuery.of(context).size.width *
                                           0.7,
                                       child: Text(
-                                        snapshot.data![index]["title"],
+                                        snapshot.data![index+1]["title"],
                                         style: TextStyle(
                                             fontFamily: "Georgia",
                                             fontSize: 20),
@@ -402,10 +388,10 @@ class _HomePageState extends State<Home> {
                                     leading: Container(
                                       width: MediaQuery.of(context).size.width *
                                           0.3,
-                                      child: snapshot.data![index]["image"] !=
+                                      child: snapshot.data![index+1]["image"] !=
                                               null
                                           ? Image.network(
-                                              snapshot.data![index]["image"],
+                                              snapshot.data![index+1]["image"],
                                               fit: BoxFit.cover,
                                             )
                                           : const Icon(
@@ -416,9 +402,9 @@ class _HomePageState extends State<Home> {
                                     subtitle: Container(
                                       padding: const EdgeInsets.symmetric(
                                           vertical: 2),
-                                      child: snapshot.data![index]["autor"] !=
+                                      child: snapshot.data![index+1]["autor"] !=
                                               null
-                                          ? Text(snapshot.data![index]["autor"])
+                                          ? Text(snapshot.data![index+1]["autor"])
                                           : Text(""),
                                     ))),
                           ),
@@ -472,24 +458,11 @@ class _HomePageState extends State<Home> {
                                   ),
                                 ),
                               ),
-                              child: Column(
-                                children: [
-                                  //Image.memory(snapshot.data![0]["bytes"]),
-                                  /*Text(
-                                    "TITULAR",
-                                    style: TextStyle(fontSize: 40),
-                                  ),*/
-                                  isLoading?CircularProgressIndicator():
-                                  Container(
-                                    height: 500,
-                                    width: 360,
-                                    padding: EdgeInsets.all(0),
-                                    color: Colors.white,
-                                    child: PdfViewer.openData( bits,
-                                    viewerController: controller,
-                                    params: const PdfViewerParams(padding: 0)),
-                                  )
-                                ],
+                              child: Container(
+                                padding: EdgeInsets.symmetric(horizontal: 10),
+                                child: 
+                                  Image.memory(snapshot.data![0]["bytes"],fit: BoxFit.cover,)
+                                ,
                               ),
                             ),
                           );

@@ -25,19 +25,24 @@ class UserServices {
                 "url": url
               })
           .toList();
-      print(titles);
-    //final response2=await http.get(Uri.parse("https://www.ifj.org/fileadmin/user_upload/Fake_News_-_FIP_AmLat.pdf"));
-    //final Uint8List bytes=response.bodyBytes;
+    /* final response2=await http.get(Uri.parse("https://ifj.org/fileadmin/user_upload/Fake_News_-_FIP_AmLat.pdf"));
+    var data2=response.bodyBytes;
 
-    //PdfDocument document=await PdfDocument.openData(bytes);
-    /*
+    titles.insert(0,{"bytes":data2});
+    print(titles);
+    print(titles.length); */
+    final response2=await http.get(Uri.parse("https://www.ifj.org/fileadmin/user_upload/Fake_News_-_FIP_AmLat.pdf"));
+    final Uint8List bytes=response2.bodyBytes;
+
+    PdfDocument document=await PdfDocument.openData(bytes);
+    
     final page=await document.getPage(1);
     final image=await page.render();
     final img=await image.createImageDetached();
     final bytesImg=await img.toByteData(format: ImageByteFormat.png);
-    print("+++++++++++++++++++{$bytesImg}");
-    titles.insert(0, {"bytes":bytesImg});
-    */
+    final bytesPng=bytesImg!.buffer.asUint8List(bytesImg.offsetInBytes,bytesImg.lengthInBytes);
+    titles.insert(0, {"bytes":bytesPng as Uint8List});
+    //print(titles[2]);
       return titles;
     } else {
       print("error");
