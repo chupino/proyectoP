@@ -8,7 +8,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:onesignal_flutter/onesignal_flutter.dart';
 import 'package:pdf_render/pdf_render_widgets.dart';
+import 'package:periodico/Widgets/Widgets/pdfViewer.dart';
 import 'package:periodico/services/dataHandler.dart';
+import 'package:periodico/services/pdfViewers.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:pdf_render/pdf_render.dart' as pr;
@@ -36,24 +38,12 @@ class _HomePageState extends State<Home> {
     // TODO: implement initState
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) => initPlatFormState());
-    DownloadPDFforThumbanail();
+    downloadPDFforThumbanail();
     
   }
 
-  void DownloadPDFforThumbanail () async{
-    /*
-    documentPDF=await DefaultCacheManager().getSingleFile("https://ifj.org/fileadmin/user_upload/Fake_News_-_FIP_AmLat.pdf");
+  void downloadPDFforThumbanail () async{
     
-    print(documentPDF.path);
-    
-    final key = cy.Key.fromUtf8('my 32 length keymy 32 length key');
-    final iv = cy.IV.fromLength(16);
-    final encrypter = cy.Encrypter(cy.AES(key));
-    final pdfBytes = documentPDF.readAsBytesSync();
-    final encrypted = encrypter.encryptBytes(pdfBytes, iv: iv);
-    final encryptedFilePath = documentPDF.path;
-    final encryptedFile = File(encryptedFilePath);
-    */
     final response=await http.get(Uri.parse("https://ifj.org/fileadmin/user_upload/Fake_News_-_FIP_AmLat.pdf"));
     var data=response.bodyBytes;
     bits=data;
@@ -245,8 +235,8 @@ class _HomePageState extends State<Home> {
 
   Container pageHeadline() {
     return Container(
-      child: const Center(
-        child: Text('Contenido para "EDICIÓN IMPRESA"'),
+      child: Center(
+        child: pdfViewers().pdfViewerBytes(bits)
       ),
     );
   }
@@ -462,6 +452,7 @@ class _HomePageState extends State<Home> {
                               DefaultTabController.of(context).index = 1;
                               setState(() {
                                 _selectedIndex = 1;
+
                               });
                             }),
                             child: Container(
