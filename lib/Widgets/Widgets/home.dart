@@ -30,12 +30,105 @@ class _HomePageState extends State<Home> {
   int _selectedIndex = 0;
   late File documentPDF;
   final TextEditingController _textController = TextEditingController();
+    final List<Map> tags = [
+  {
+    "titulo": "Cultura",
+    "imagenURL": "https://portal.andina.pe/EDPfotografia3/Thumbnail/2017/01/25/000400475W.jpg",
+    "goTo":"https://diarioelpueblo.com.pe/index.php/category/cultura/"
+  },
+  {
+    "titulo": "Deporte",
+    "imagenURL": "https://www.unsa.edu.pe/wp-content/uploads/2020/02/FOTO-FINAL-878x426.png",
+    "goTo":"https://diarioelpueblo.com.pe/index.php/category/deporte/"
+  },
+  {
+    "titulo": "Distritos",
+    "imagenURL": "https://cdn.forbes.pe/2022/05/Arequipa-Agencia-Andina.jpg",
+    "goTo":"https://diarioelpueblo.com.pe/index.php/category/distritos/"
+  },
+  {
+    "titulo": "Economía",
+    "imagenURL": "https://www.comexperu.org.pe/upload/images/sem-1129_economia-210722-075720.jpg",
+    "goTo":"https://diarioelpueblo.com.pe/index.php/category/economia/"
+  },
+  {
+    "titulo": "Editorial",
+    "imagenURL": "https://tiojuan.files.wordpress.com/2020/10/canilla-arequipeno.jpg?w=287",
+    "goTo":"https://diarioelpueblo.com.pe/index.php/category/editorial/"
+  },
+  {
+    "titulo": "Educación",
+    "imagenURL": "https://larepublica.cronosmedia.glr.pe/original/2019/10/12/62b918ffafced5708606eb96.jpg",
+    "goTo":"https://diarioelpueblo.com.pe/index.php/category/educacion/"
+  },
+  {
+    "titulo": "Entrevistas",
+    "imagenURL": "https://soyliterauta.com/wp-content/uploads/2020/10/Entrevista-Periodistica.jpg",
+    "goTo":"https://diarioelpueblo.com.pe/index.php/category/entrevistas/"
+  },
+  {
+    "titulo": "Especiales",
+    "imagenURL": "https://www.alwahotel.com/wp-content/uploads/2016/09/diablo-en-la-catedral-AQP-Diario-El-Pueblo.jpg",
+    "goTo":"https://diarioelpueblo.com.pe/index.php/category/especiales/"
+  },
+  {
+    "titulo": "Internacional",
+    "imagenURL": "https://imagenes.expreso.ec/files/image_700_402/files/fp/uploads/2023/04/11/6435dd3ddd131.r_d.2283-3845-1563.jpeg",
+    "goTo":"https://diarioelpueblo.com.pe/index.php/category/noticias/internacional/"
+  },
+  {
+    "titulo": "Nacional",
+    "imagenURL": "https://diarioelpueblo.com.pe/wp-content/uploads/2023/01/regiones_peru.jpg",
+    "goTo":"https://diarioelpueblo.com.pe/index.php/category/noticias/nacional/"
+  },
+  {
+    "titulo": "Local",
+    "imagenURL": "https://1.bp.blogspot.com/-6wIuXpdp2TA/W4LYY1YtCLI/AAAAAAAATHg/STLxQ27ixoYYbSjv5dzAR8VVDVYIKSBvwCLcBGAs/s1600/IMG_0598.jpg",
+    "goTo":"https://diarioelpueblo.com.pe/index.php/category/noticias/local/",
+  },
+  {
+      "titulo": "Regional",
+      "imagenURL": "https://media.tacdn.com/media/attractions-splice-spp-674x446/07/37/cc/cd.jpg",
+      "goTo":"https://diarioelpueblo.com.pe/index.php/category/noticias/regional/"
+    },
+    {
+      "titulo": "Opinión",
+      "imagenURL": "https://definicion.de/wp-content/uploads/2009/11/opinion-1.jpg",
+      "goTo":"https://diarioelpueblo.com.pe/index.php/category/opinion/"
+    },
+    {
+      "titulo": "Foto Hoy",
+      "imagenURL": "https://i0.wp.com/imgs.hipertextual.com/wp-content/uploads/2016/12/lente-fotografo.jpg",
+      "goTo":"https://diarioelpueblo.com.pe/index.php/category/opinion/foto-hoy/"
+    },
+    {
+      "titulo": "Policiales",
+      "imagenURL": "https://siip3.institutopacifico.pe/assets/uploads/noticias/9FB0A40BE81390584FECE6DD1877D406_1665067495_original.png",
+      "goTo":"https://diarioelpueblo.com.pe/index.php/category/policiales/"
+    },
+    {
+      "titulo": "Política",
+      "imagenURL": "https://live.staticflickr.com/7243/6884581202_2748cdbde7_b.jpg",
+      "goTo":"https://diarioelpueblo.com.pe/index.php/category/politica/"
+    },
+    {
+      "titulo": "Salud",
+      "imagenURL": "https://www.esan.edu.pe/images/blog/2021/11/16/x1500x844-salud-peru-16-11.jpg.pagespeed.ic.2ctF5ObSmS.jpg",
+      "goTo":"https://diarioelpueblo.com.pe/index.php/category/salud/"
+    },
+    {
+      "titulo": "Turismo",
+      "imagenURL": "https://denomades.s3.us-west-2.amazonaws.com/blog/wp-content/uploads/2016/07/04134751/can%CC%83oncolca.jpg",
+      "goTo":"https://diarioelpueblo.com.pe/index.php/category/turismo/"
+    },
+  ];
   
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) => initPlatFormState());
+    UserServices().getTest();
     
   }
 
@@ -49,6 +142,7 @@ class _HomePageState extends State<Home> {
           appBar: appBarLogo(context),
           drawer: drawerMenu(context),
           body: TabBarView(
+            physics: NeverScrollableScrollPhysics(),
             children: [
               pageNews(theme),
               pageHeadline(),
@@ -62,17 +156,26 @@ class _HomePageState extends State<Home> {
           ),
         ));
   }
-
+Container test(){
+  return Container();
+}
   Drawer drawerMenu(BuildContext context) {
+    void _enviarPortal(String url) async {
+    if (await canLaunchUrl(Uri.parse(url))) {
+      await launchUrl(
+        Uri.parse(url),
+        );
+    } else {
+      throw 'No se pudo abrir $url';
+    }
+  }
     return Drawer(
       // Aquí puedes agregar los elementos que quieras mostrar en el menú
       child: ListView(
         padding: EdgeInsets.zero,
         children: [
           DrawerHeader(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
+            child: 
                 Row(
                   children: [
                     IconButton(
@@ -88,92 +191,29 @@ class _HomePageState extends State<Home> {
                     SizedBox(
                       width: 10,
                     ),
-                    Text(
-                      "TEMAS",
-                      style: TextStyle(fontSize: 30, color: Colors.white),
-                    )
-                  ],
-                ),
-                Container(
-                  height: 60,
+                    Container(
+                  height: 35,
                   child: Image.asset(
                     "assets/logo_blanco.png",
                     fit: BoxFit.contain,
-                    height: 30, // ajusta la altura de la imagen
+                    height: 50, // ajusta la altura de la imagen
                   ),
                 ),
-              ],
-            ),
+                  ],
+                ),
+                
+                
+              
             decoration: BoxDecoration(
               color: Theme.of(context).drawerTheme.shadowColor,
             ),
           ),
-          ListTile(
-            title: Text('Deportes'),
-            onTap: () {
-              Navigator.pushNamed(context, "/genreSelected",
-                  arguments: {"genre": "Deportes", "title": "Deportes"});
-            },
-            trailing: Icon(
-              Icons.add,
-              color: Theme.of(context).iconTheme.color,
-            ),
-          ),
-          ListTile(
-            title: Text('Economia'),
-            onTap: () {
-              Navigator.pushNamed(context, "/genreSelected",
-                  arguments: {"genre": "Economia", "title": "Economia"});
-            },
-            trailing: Icon(
-              Icons.add,
-              color: Theme.of(context).iconTheme.color,
-            ),
-          ),
-          ListTile(
-            title: Text('Salud'),
-            onTap: () {
-              Navigator.pushNamed(context, "/genreSelected",
-                  arguments: {"genre": "Salud", "title": "Salud"});
-            },
-            trailing: Icon(
-              Icons.add,
-              color: Theme.of(context).iconTheme.color,
-            ),
-          ),
-          ListTile(
-            title: Text('Tecnologia'),
-            onTap: () {
-              Navigator.pushNamed(context, "/genreSelected",
-                  arguments: {"genre": "Tecnologia", "title": "Tecnologia"});
-            },
-            trailing: Icon(
-              Icons.add,
-              color: Theme.of(context).iconTheme.color,
-            ),
-          ),
-          ListTile(
-            title: Text('Policia'),
-            onTap: () {
-              Navigator.pushNamed(context, "/genreSelected",
-                  arguments: {"genre": "Policia", "title": "Policia"});
-            },
-            trailing: Icon(
-              Icons.add,
-              color: Theme.of(context).iconTheme.color,
-            ),
-          ),
-          ListTile(
-            title: Text('Politica'),
-            onTap: () {
-              Navigator.pushNamed(context, "/genreSelected",
-                  arguments: {"genre": "Politica", "title": "Politica"});
-            },
-            trailing: Icon(
-              Icons.add,
-              color: Theme.of(context).iconTheme.color,
-            ),
-          ),
+          
+          for (var i = 0; i < tags.length; i++)
+              ListTile(
+                leading: Text(tags[i]["titulo"],style: TextStyle(fontSize: 20),),
+                trailing: IconButton(icon: Icon(Icons.add),onPressed: (){_enviarPortal(tags[i]["goTo"]);}),
+              )
         ],
       ),
     );
@@ -193,14 +233,7 @@ class _HomePageState extends State<Home> {
               height: 50, // ajusta la altura de la imagen
             ),
           ),
-          Container(
-            padding: EdgeInsets.only(
-                top: 15), // Ajusta el padding superior del texto
-            child: Text(
-              "INICIO",
-              style: TextStyle(fontSize: 15),
-            ),
-          ),
+          
         ],
       ),
       bottom: TabBar(
@@ -211,7 +244,7 @@ class _HomePageState extends State<Home> {
         }),
         tabs: const [
           Tab(text: 'NOTICIAS'),
-          Tab(text: 'EDICIÓN IMPRESA'),
+          Tab(text: 'EDICIÓN DE HOY'),
           Tab(text: 'LO ÚLTIMO'),
           Tab(text: 'SE NUESTRO CORRESPONSAL'),
         ],
@@ -432,7 +465,6 @@ class _HomePageState extends State<Home> {
                       itemCount: snapshot.data!.length + 1,
                       itemBuilder: ((context, index) {
                         if (index == 0) {
-                          var controller;
                           return GestureDetector(
                             onTap: (() {
                               DefaultTabController.of(context).index = 1;
@@ -497,7 +529,7 @@ class _HomePageState extends State<Home> {
                                             MediaQuery.of(context).size.width *
                                                 0.7,
                                         child: Text(
-                                          snapshot.data![index]["title"],
+                                          snapshot.data![index]["title"]??Container(),
                                           style: TextStyle(
                                               fontFamily: "Georgia",
                                               fontSize: 20),
@@ -509,7 +541,7 @@ class _HomePageState extends State<Home> {
                                                 0.3,
                                         child: snapshot.data![index]
                                                     ["image"] !=
-                                                null
+                                                null && snapshot.data![index]["image"] is String
                                             ? Image.network(
                                                 snapshot.data![index]
                                                     ["image"],

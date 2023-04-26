@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter/src/widgets/placeholder.dart';
-import 'package:flutter_widget_from_html/flutter_widget_from_html.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:periodico/services/dataHandler.dart';
 
@@ -33,7 +32,6 @@ class _testScreenState extends State<testScreen> {
                   Text(snapshot.data!["id"].toString()),
                   Text(snapshot.data!["title"]),
                   //Text(snapshot.data!["content"]),
-                  HtmlWidget(htmlContent),
                 ]),
               ),
             );

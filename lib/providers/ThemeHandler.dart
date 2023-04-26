@@ -5,17 +5,26 @@ import 'package:shared_preferences/shared_preferences.dart';
 class ThemeHandler with ChangeNotifier {
   final myThemeLight = ThemeData(
     inputDecorationTheme: InputDecorationTheme(
-      fillColor: Color(0xFF98ff96),
-      filled: true,
-      iconColor: Color(0x000000),
-    ),
-    cardColor: Color(0xFF98ff96),
+      iconColor: Colors.black,
+  border: OutlineInputBorder(
+    borderSide: BorderSide(color: Colors.black, width: 5),
+    borderRadius: BorderRadius.all(Radius.circular(50))
+    
+  ),
+  focusedBorder: OutlineInputBorder(
+    borderSide: BorderSide(color: Colors.black, width: 5),
+  ),
+  fillColor: Colors.white,
+  filled: true,
+),
+    cardColor: Color(0xFF006414),
+    cardTheme: CardTheme(),
     iconTheme: IconThemeData(color: Color(0xFF000000)),
     appBarTheme: AppBarTheme(
-        color: Color(0xFF003400),
+        color: Color(0xFF7ad03a),
         actionsIconTheme: IconThemeData(color: Color(0xFFdd3333))),
-    primaryColor: Color(0xFF003400),
-    primaryColorDark: Color(0xFF003400),
+    primaryColor: Color(0xFF7ad03a),
+    primaryColorDark: Color(0xFF7ad03a),
     accentColor: Color(0xFF003400),
     backgroundColor: Color(0xFF003400),
     scaffoldBackgroundColor: Color(0xFFFFFFFF),
@@ -41,7 +50,7 @@ class ThemeHandler with ChangeNotifier {
     drawerTheme: DrawerThemeData(
         backgroundColor: Colors.white,
         //scrimColor: Colors.black,
-        shadowColor: Color(0xFF009929)),
+        shadowColor: Color(0xFF7ad03a)),
   );
   final myThemeDark = ThemeData(
     inputDecorationTheme: InputDecorationTheme(

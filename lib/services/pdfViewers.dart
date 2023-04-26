@@ -16,7 +16,7 @@ class pdfViewers{
     
     Future<Uint8List> pdfBytes () async{
     try{
-      final response=await http.get(Uri.parse("https://ifj.org/fileadmin/user_upload/Fake_News_-_FIP_AmLat.pdf"));
+      final response=await http.get(Uri.parse("https://diarioelpueblo.com.pe/wp-content/uploads/2023/04/26-04-2023.pdf"));
       Uint8List data=response.bodyBytes;
       print(data.runtimeType);
       return data;
@@ -59,7 +59,7 @@ class pdfViewers{
         IconButton(onPressed: (){savePdf(context);}, icon: Icon(Icons.download))
       ]),
       body: SfPdfViewer.network(
-          "https://ifj.org/fileadmin/user_upload/Fake_News_-_FIP_AmLat.pdf",
+          "https://diarioelpueblo.com.pe/wp-content/uploads/2023/04/26-04-2023.pdf",
           controller: controller,),
     );
     }else{

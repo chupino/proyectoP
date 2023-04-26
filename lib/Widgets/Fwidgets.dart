@@ -2,7 +2,10 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:onesignal_flutter/onesignal_flutter.dart';
+import 'package:provider/provider.dart';
+import 'package:url_launcher/url_launcher.dart';
 
+import '../providers/ThemeHandler.dart';
 import '../services/dataHandler.dart';
 
 class appBar extends StatelessWidget implements PreferredSizeWidget {
@@ -72,21 +75,15 @@ class _navBarState extends State<navBar> {
             color: Theme.of(context).primaryColorLight,
           ),
           label: "INICIO",
-          activeIcon: Icon(
-            Icons.home,
-            color: Theme.of(context).hoverColor,
-          ),
+          activeIcon: IconWithBackground(icon: Icons.home, backgroundColor: Colors.red)
         ),
         BottomNavigationBarItem(
           icon: Icon(
             Icons.explore,
             color: Theme.of(context).primaryColorLight,
           ),
-          label: "EXPLORAR",
-          activeIcon: Icon(
-            Icons.explore,
-            color: Theme.of(context).hoverColor,
-          ),
+          label: "CATEGORIAS",
+          activeIcon: IconWithBackground(icon: Icons.explore, backgroundColor: Colors.red)
         ),
         BottomNavigationBarItem(
           icon: Icon(
@@ -94,10 +91,7 @@ class _navBarState extends State<navBar> {
             color: Theme.of(context).primaryColorLight,
           ),
           label: "PERIODICOS",
-          activeIcon: Icon(
-            Icons.library_books,
-            color: Theme.of(context).hoverColor,
-          ),
+          activeIcon: IconWithBackground(icon: Icons.library_books, backgroundColor: Colors.red)
         ),
         BottomNavigationBarItem(
           icon: Icon(
@@ -105,10 +99,7 @@ class _navBarState extends State<navBar> {
             color: Theme.of(context).primaryColorLight,
           ),
           label: "AJUSTES",
-          activeIcon: Icon(
-            Icons.settings,
-            color: Theme.of(context).hoverColor,
-          ),
+          activeIcon: IconWithBackground(icon: Icons.settings, backgroundColor: Colors.red)
         )
       ],
       currentIndex: _selectedIndex,
@@ -253,14 +244,15 @@ class _CustomSwitchState extends State<CustomSwitch> {
 }
 
 class CustomCardTags extends StatefulWidget {
+  
   final String title;
   final String image;
-  final String genre;
+  final String url;
 
   const CustomCardTags({
     required this.title,
     required this.image,
-    required this.genre,
+    required this.url,
   });
 
   @override
@@ -270,44 +262,60 @@ class CustomCardTags extends StatefulWidget {
 class _CustomCardTagsState extends State<CustomCardTags> {
   String title = "";
   String image = "";
-  String genre = "";
+  String url = "";
 
   @override
   void initState() {
     // TODO: implement initState
     title = widget.title;
     image = widget.image;
-    genre = widget.genre;
+    url = widget.url;
     super.initState();
   }
-
+  void _enviarPortal(String url) async {
+    if (await canLaunchUrl(Uri.parse(url))) {
+      await launchUrl(
+        Uri.parse(url),
+        );
+    } else {
+      throw 'No se pudo abrir $url';
+    }
+  }
   @override
   Widget build(BuildContext context) {
+    final theme = Provider.of<ThemeHandler>(context);
     // TODO: implement build
     return GestureDetector(
       onTap: () {
-        Navigator.pushNamed(context, "/genreSelected",
-            arguments: {"genre": genre, "title": title});
+        _enviarPortal(url);
       },
       child: Card(
-        child: SizedBox(
-          width: MediaQuery.of(context).size.width / 2 - 20,
-          height: MediaQuery.of(context).size.height * 0.2,
-          child: Center(
-            child: Column(
-              children: [
-                Image.asset(
-                  image,
-                  fit: BoxFit.cover,
-                ),
-                Text(title,
-                    style: TextStyle(
-                      fontSize: 25,
-                    )),
-              ],
+  
+          child: SizedBox(
+            width: MediaQuery.of(context).size.width / 2 - 20,
+            height: MediaQuery.of(context).size.height * 0.2,
+            child: Center(
+              child: Column(
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 8),
+                    child: Image.network(
+                      image,
+                      fit: BoxFit.cover,
+                      height: 100,
+                      width: 150,
+                    ),
+                  ),
+                  Text(title,
+                      style: TextStyle(
+                        fontSize: 25,
+                        color: Theme.of(context).scaffoldBackgroundColor
+                      )),
+                ],
+              ),
             ),
           ),
-        ),
+        
       ),
     );
   }
@@ -352,3 +360,34 @@ class SearchBar extends StatelessWidget {
     );
   }
 }
+
+class IconWithBackground extends StatelessWidget {
+  final IconData icon;
+  final Color backgroundColor;
+  final double size;
+
+  IconWithBackground({
+    required this.icon,
+    required this.backgroundColor,
+    this.size = 24.0,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      decoration: BoxDecoration(
+        color: backgroundColor,
+        shape: BoxShape.circle,
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Icon(
+          icon,
+          size: size,
+          color: Colors.white,
+        ),
+      ),
+    );
+  }
+}
+

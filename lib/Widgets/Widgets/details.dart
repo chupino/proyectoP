@@ -15,6 +15,7 @@ import 'package:syncfusion_flutter_pdfviewer/pdfviewer.dart' as pe;
 import 'package:crypto/crypto.dart';
 import 'package:textwrap/textwrap.dart';
 import 'dart:math';
+import 'package:flutter_html/flutter_html.dart';
 
 class Details extends StatefulWidget {
   const Details({super.key});
@@ -117,16 +118,7 @@ class _DetailsState extends State<Details> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text("Noticias"), actions: [
-        IconButton(
-            onPressed: () {
-              _showFontSizePickerDialog();
-            },
-            icon: const Icon(
-              Icons.format_size,
-              size: 35,
-            ))
-      ]),
+      appBar: AppBar(title: const Text("Noticias")),
       body: NewDetails(),
     );
   }
@@ -226,11 +218,8 @@ class _DetailsState extends State<Details> {
                                     const SizedBox(
                                       height: 7,
                                     ),
-                                    Text(snapshot.data!["content"]??Container(),
-                                        style: TextStyle(
-                                            fontSize: _fontSize,
-                                            fontWeight: FontWeight.w400,
-                                            fontFamily: "Georgia"))
+                                    Html(data: snapshot.data!["content"])??Container(),
+                                        
                                   ],
                                 ),
                               )

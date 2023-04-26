@@ -9,14 +9,28 @@ import 'package:pdf_render/pdf_render.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class UserServices {
+
+  Future<void> getTest() async{
+    final url="https://diarioelpueblo.com.pe/wp-json/wp/v2/posts/";
+    Uri urlUri = Uri.parse(url);
+    final response = await http.get(urlUri);
+    if(response.statusCode==200){
+      print("si");
+      var data = jsonDecode(response.body);
+      var articles = data as List;
+      print(articles);
+    }else{
+      print("no");
+    }
+  }
   Future<List> getTitles() async {
     final url =
-        "https://newsapi.org/v2/everything?q=tesla&language=es&from=2023-03-28&sortBy=publishedAt&apiKey=5025449ded9546259210dcca8c7a5531";
+        "https://diarioelpueblo.com.pe/wp-json/wp/v2/posts/";
     Uri urlUri = Uri.parse(url);
     final response = await http.get(urlUri);
     if (response.statusCode == 200) {
       var data = jsonDecode(response.body);
-      var articles = data["articles"] as List;
+      var articles = data as List;
       var titles = articles
           .map((e) => {
                 "title": e["title"],
@@ -31,7 +45,8 @@ class UserServices {
     titles.insert(0,{"bytes":data2});
     print(titles);
     print(titles.length); */
-    final response2=await http.get(Uri.parse("https://www.ifj.org/fileadmin/user_upload/Fake_News_-_FIP_AmLat.pdf"));
+    print(titles);
+    final response2=await http.get(Uri.parse("https://diarioelpueblo.com.pe/wp-content/uploads/2023/04/26-04-2023.pdf"));
     final Uint8List bytes=response2.bodyBytes;
 
     PdfDocument document=await PdfDocument.openData(bytes);
@@ -110,11 +125,12 @@ class UserServices {
   }
 
   Future<Map> getArticle(String url, int index) async {
-    Uri urlUri = Uri.parse(url);
+    Uri urlUri = Uri.parse("https://diarioelpueblo.com.pe/wp-json/wp/v2/posts/");
     final response = await http.get(urlUri);
     if (response.statusCode == 200) {
       var data = jsonDecode(response.body);
-      var articles = data["articles"] as List;
+      var articles = data as List;
+      
       List article = articles
           .map((e) => {
                 "title": e["title"],
