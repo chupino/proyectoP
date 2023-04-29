@@ -30,8 +30,10 @@ class _GenreSelectedState extends State<GenreSelected> {
         body: articlesForGenre(genre, theme));
   }
 
-  FutureBuilder articlesForGenre(String genre, ThemeHandler theme) {
-    return FutureBuilder(
+  Widget articlesForGenre(String genre, ThemeHandler theme) {
+    return Container();
+    
+    /*FutureBuilder(
       future: UserServices().getArticlesforGenre(genre),
       builder: ((context, snapshot) {
         if (snapshot.hasData && snapshot.data!.isNotEmpty) {
@@ -111,6 +113,6 @@ class _GenreSelectedState extends State<GenreSelected> {
           return Center(child: CircularProgressIndicator());
         }
       }),
-    );
+    );*/
   }
 }

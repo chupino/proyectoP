@@ -4,6 +4,8 @@ import 'dart:io';
 import 'dart:typed_data';
 import 'dart:ui';
 
+import 'package:cached_memory_image/cached_memory_image.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:onesignal_flutter/onesignal_flutter.dart';
@@ -22,8 +24,15 @@ import '../../providers/ThemeHandler.dart';
 import '../Fwidgets.dart';
 
 class Home extends StatefulWidget {
+  final List notas;
+  final Uint8List imagenPDF;
   @override
   _HomePageState createState() => _HomePageState();
+
+  Home({
+    required this.notas,
+    required this.imagenPDF
+  });
 }
 
 class _HomePageState extends State<Home> {
@@ -122,13 +131,13 @@ class _HomePageState extends State<Home> {
       "goTo":"https://diarioelpueblo.com.pe/index.php/category/turismo/"
     },
   ];
-  
+  bool imagenValida=false;
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) => initPlatFormState());
-    UserServices().getTest();
+    
     
   }
 
@@ -163,7 +172,11 @@ Container test(){
     void _enviarPortal(String url) async {
     if (await canLaunchUrl(Uri.parse(url))) {
       await launchUrl(
+        
         Uri.parse(url),
+        webViewConfiguration: WebViewConfiguration(enableJavaScript: true,enableDomStorage: true,headers: {"url":url}),
+        mode: LaunchMode.externalApplication
+        
         );
     } else {
       throw 'No se pudo abrir $url';
@@ -393,13 +406,11 @@ Container test(){
                           ),
                           GestureDetector(
                             onTap: () {
-                              print(index);
                               Navigator.pushNamed(
                                 context,
                                 "/details",
                                 arguments: {
                                   "index": index,
-                                  "url": snapshot.data![index+1]["url"]
                                 },
                               );
                             },
@@ -451,26 +462,208 @@ Container test(){
               }
             }));
   }
-  Container pageNews(ThemeHandler theme) {
-    return Container(
-      child: Center(
-        child: Column(
-          children: [
-            Expanded(
-              child: FutureBuilder(
-                future: UserServices().getTitles(),
-                builder: ((context, snapshot) {
-                  if (snapshot.hasData) {
-                    return ListView.builder(
-                      itemCount: snapshot.data!.length + 1,
-                      itemBuilder: ((context, index) {
-                        if (index == 0) {
-                          return GestureDetector(
+Widget pageNews(ThemeHandler theme) {
+
+    return SingleChildScrollView(
+      child: Column(
+        children: [
+          miniatura(context),
+          notas()
+        ],
+      
+      
+    ),
+    );
+
+}
+
+
+Widget notas() {
+  final List articulos=widget.notas as List;
+  if(articulos.isNotEmpty){
+    return ListView.builder(
+      shrinkWrap: true,
+      primary: false,
+      itemCount: articulos.length,
+      itemBuilder: (context, index) {
+        return Container(
+                        child: Column(children: <Widget>[
+                          SizedBox(
+                            width: MediaQuery.of(context).size.width - 20,
+                            child: Divider(
+                              thickness: 1,
+                            ),
+                          ),
+                          GestureDetector(
+                            onTap: () {
+                              print(index);
+                              Navigator.pushNamed(
+                                context,
+                                "/details",
+                                arguments: {
+                                  "index": index,
+                                  "url": articulos[index]["url"]
+                                },
+                              );
+                            },
+                            child: Container(
+                                padding:
+                                    const EdgeInsets.symmetric(vertical: 5),
+                                width: MediaQuery.of(context).size.width - 20,
+                                child: ListTile(
+                                    title: Container(
+                                      width:
+                                          MediaQuery.of(context).size.width *
+                                              0.7,
+                                      child: Text(
+                                        articulos[index]["title"]??Container(),
+                                        style: TextStyle(
+                                            fontFamily: "Georgia",
+                                            fontSize: 20),
+                                      ),
+                                    ),
+                                    leading: Container(
+                                      width:
+                                          MediaQuery.of(context).size.width *
+                                              0.3,
+                                      child: articulos[index]
+                                                  ["image"] !=
+                                              null && articulos[index]["image"] is String
+                                          ? CachedNetworkImage(
+                                            imageUrl: articulos[index]["image"],
+                                            fit: BoxFit.cover,
+                                            placeholder: (context,url)=>Container(color:Colors.black12),
+                                            errorWidget: (context, url, error) => Container(
+                                              color: Colors.black12,
+                                              child: Icon(Icons.error,color: Colors.red,),
+                                            ),
+                                            )
+                                          
+                                          /*Image.network(
+                                              articulos[index]
+                                                  ["image"],
+                                              fit: BoxFit.cover,
+                                            )*/
+                                          : const Icon(
+                                              Icons.image,
+                                              size: 50,
+                                            ),
+                                    ),
+                                    subtitle: Container(
+                                      padding: const EdgeInsets.symmetric(
+                                          vertical: 2),
+                                      child: articulos[index]
+                                                  ["autor"] !=
+                                              null
+                                          ? Text(articulos[index]
+                                              ["autor"])
+                                          : Text(""),
+                                    ))),
+                          ),
+                        ]),
+                      );
+      },
+    );
+  }else{
+    return Container(child: Text("No hay información"),);
+  }
+}
+Widget articles() {
+return FutureBuilder(
+              future: UserServices().getTitles(),
+              builder: ((context, snapshot) {
+                if (snapshot.hasData) {
+                  return ListView.builder(
+                    shrinkWrap: true,
+                    primary: false,
+                    itemCount: snapshot.data!.length,
+                    itemBuilder: ((context, index) {
+                      return Container(
+                        child: Column(children: <Widget>[
+                          SizedBox(
+                            width: MediaQuery.of(context).size.width - 20,
+                            child: Divider(
+                              thickness: 1,
+                            ),
+                          ),
+                          GestureDetector(
+                            onTap: () {
+                              print(index);
+                              Navigator.pushNamed(
+                                context,
+                                "/details",
+                                arguments: {
+                                  "index": index,
+                                  "url": snapshot.data![index]["url"]
+                                },
+                              );
+                            },
+                            child: Container(
+                                padding:
+                                    const EdgeInsets.symmetric(vertical: 5),
+                                width: MediaQuery.of(context).size.width - 20,
+                                child: ListTile(
+                                    title: Container(
+                                      width:
+                                          MediaQuery.of(context).size.width *
+                                              0.7,
+                                      child: Text(
+                                        snapshot.data![index]["title"]??Container(),
+                                        style: TextStyle(
+                                            fontFamily: "Georgia",
+                                            fontSize: 20),
+                                      ),
+                                    ),
+                                    leading: Container(
+                                      width:
+                                          MediaQuery.of(context).size.width *
+                                              0.3,
+                                      child: snapshot.data![index]
+                                                  ["image"] !=
+                                              null && snapshot.data![index]["image"] is String
+                                          ? Image.network(
+                                              snapshot.data![index]
+                                                  ["image"],
+                                              fit: BoxFit.cover,
+                                            )
+                                          : const Icon(
+                                              Icons.image,
+                                              size: 50,
+                                            ),
+                                    ),
+                                    subtitle: Container(
+                                      padding: const EdgeInsets.symmetric(
+                                          vertical: 2),
+                                      child: snapshot.data![index]
+                                                  ["autor"] !=
+                                              null
+                                          ? Text(snapshot.data![index]
+                                              ["autor"])
+                                          : Text(""),
+                                    ))),
+                          ),
+                        ]),
+                      );
+                    }),
+                  );
+                } else {
+                  return Center(child: CircularProgressIndicator(color: Colors.blue,));
+                }
+              }),
+            );
+          
+  }
+
+  Widget miniatura(BuildContext context){
+    final Uint8List imagen=widget.imagenPDF;
+
+    if(imagen.isNotEmpty){
+          return GestureDetector(
                             onTap: (() {
                               DefaultTabController.of(context).index = 1;
                               setState(() {
                                 _selectedIndex = 1;
-
+          
                               });
                             }),
                             child: Container(
@@ -493,89 +686,73 @@ Container test(){
                               child: Container(
                                 padding: EdgeInsets.symmetric(horizontal: 10),
                                 child: 
-                                  Image.memory(snapshot.data![0]["bytes"],fit: BoxFit.cover,)
+                                  CachedMemoryImage(bytes: imagen, uniqueKey: '1',)
                                 ,
                               ),
                             ),
                           );
-                        }
-                        return Container(
-                          child: Column(children: <Widget>[
-                            SizedBox(
-                              width: MediaQuery.of(context).size.width - 20,
-                              child: Divider(
-                                thickness: 1,
+        
+        
+        
+      
+
+    }else{
+      return Container(
+        child: Text("No se pudo cargar el pdf"),
+      );
+    }
+  }
+  FutureBuilder thumbnail(BuildContext context) {
+    return FutureBuilder(
+      future: UserServices().getThumbnail(),
+      builder: (context,snapshot){
+        if(snapshot.hasData){
+            return GestureDetector(
+                            onTap: (() {
+                              DefaultTabController.of(context).index = 1;
+                              setState(() {
+                                _selectedIndex = 1;
+          
+                              });
+                            }),
+                            child: Container(
+                              margin: const EdgeInsets.symmetric(vertical: 5),
+                              padding:
+                                  const EdgeInsets.symmetric(vertical: 10),
+                              decoration: BoxDecoration(
+                                color: Theme.of(context).canvasColor,
+                                border: Border(
+                                  top: BorderSide(
+                                    width: 1.0,
+                                    color: Theme.of(context).dividerColor,
+                                  ),
+                                  bottom: BorderSide(
+                                    width: 1.0,
+                                    color: Theme.of(context).dividerColor,
+                                  ),
+                                ),
+                              ),
+                              child: Container(
+                                padding: EdgeInsets.symmetric(horizontal: 10),
+                                child: 
+                                  Image.memory(snapshot.data!,fit: BoxFit.cover,)
+                                ,
                               ),
                             ),
-                            GestureDetector(
-                              onTap: () {
-                                print(index);
-                                Navigator.pushNamed(
-                                  context,
-                                  "/details",
-                                  arguments: {
-                                    "index": index,
-                                    "url": snapshot.data![index]["url"]
-                                  },
-                                );
-                              },
-                              child: Container(
-                                  padding:
-                                      const EdgeInsets.symmetric(vertical: 5),
-                                  width: MediaQuery.of(context).size.width - 20,
-                                  child: ListTile(
-                                      title: Container(
-                                        width:
-                                            MediaQuery.of(context).size.width *
-                                                0.7,
-                                        child: Text(
-                                          snapshot.data![index]["title"]??Container(),
-                                          style: TextStyle(
-                                              fontFamily: "Georgia",
-                                              fontSize: 20),
-                                        ),
-                                      ),
-                                      leading: Container(
-                                        width:
-                                            MediaQuery.of(context).size.width *
-                                                0.3,
-                                        child: snapshot.data![index]
-                                                    ["image"] !=
-                                                null && snapshot.data![index]["image"] is String
-                                            ? Image.network(
-                                                snapshot.data![index]
-                                                    ["image"],
-                                                fit: BoxFit.cover,
-                                              )
-                                            : const Icon(
-                                                Icons.image,
-                                                size: 50,
-                                              ),
-                                      ),
-                                      subtitle: Container(
-                                        padding: const EdgeInsets.symmetric(
-                                            vertical: 2),
-                                        child: snapshot.data![index]
-                                                    ["autor"] !=
-                                                null
-                                            ? Text(snapshot.data![index]
-                                                ["autor"])
-                                            : Text(""),
-                                      ))),
-                            ),
-                          ]),
-                        );
-                      }),
-                    );
-                  } else {
-                    return Center(child: const CircularProgressIndicator());
-                  }
-                }),
-              ),
-            )
-          ],
-        ),
-      ),
+                          );
+          
+        }else{
+          return SizedBox(
+            height: 300,
+            width: 300,
+            child: Center(
+              child: CircularProgressIndicator(),
+            ),
+            );
+        }
+        
+      },
+      
     );
   }
 

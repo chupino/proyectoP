@@ -14,55 +14,11 @@ class testScreen extends StatefulWidget {
 class _testScreenState extends State<testScreen> {
   @override
   Widget build(BuildContext context) {
-    final args =
-        ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
-    String postId = args['postId']! as String;
     return Scaffold(
       appBar: AppBar(
-        title: Text("Push Notification"),
+        title: Text("Test Screen"),
       ),
-      body: FutureBuilder(
-        future: UserServices().getContentNotification(postId),
-        builder: (context, snapshot) {
-          if (snapshot.hasData && snapshot.data!.isNotEmpty) {
-            String htmlContent = snapshot.data!["content"];
-            return Center(
-              child: Container(
-                child: Column(children: [
-                  Text(snapshot.data!["id"].toString()),
-                  Text(snapshot.data!["title"]),
-                  //Text(snapshot.data!["content"]),
-                ]),
-              ),
-            );
-          } else if (snapshot.hasError) {
-            print(snapshot.error);
-            return Center(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(
-                    "No se pudo cargar los resultados. Revisa tu conexion",
-                    style:
-                        GoogleFonts.roboto(textStyle: TextStyle(fontSize: 25)),
-                    textAlign: TextAlign.center,
-                  ),
-                  SizedBox(
-                    height: 15,
-                  ),
-                  Icon(
-                    Icons.wifi_off,
-                    size: 50,
-                  )
-                ],
-              ),
-            );
-          } else {
-            return CircularProgressIndicator();
-          }
-        },
-      ),
+      body: Container()
     );
   }
 }

@@ -145,13 +145,9 @@ class _DetailsState extends State<Details> {
     final args =
         ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
     final index = args['index'] as int;
-    final url = args['url'] as String;
-    print("aa" + url);
-    print("bb $index");
-    print(UserServices().getArticle(url, index));
 
     return FutureBuilder(
-              future: UserServices().getArticle(url, index),
+              future: UserServices().getArticle(index),
               builder: (context, snapshot) {
                 if (snapshot.hasData) {
                   return SingleChildScrollView(

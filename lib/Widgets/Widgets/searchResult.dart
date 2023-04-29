@@ -50,10 +50,11 @@ class _searchResultState extends State<searchResult> {
           ],
         ),
       ),
-      body: searchArticlesResult(theme),
+      body: Container()
+      //searchArticlesResult(theme),
     );
   }
-
+/*
   FutureBuilder<List<dynamic>> searchArticlesResult(ThemeHandler theme) {
     return FutureBuilder(
       future: UserServices().searchTitle(_searchController.text),
@@ -75,7 +76,7 @@ class _searchResultState extends State<searchResult> {
         }
       },
     );
-  }
+  }*/
 
   Center ResultNoData() {
     return Center(

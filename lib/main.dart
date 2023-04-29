@@ -1,5 +1,8 @@
 
+import 'dart:typed_data';
+import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:periodico/Widgets/Widgets/account.dart';
 import 'package:periodico/Widgets/Widgets/details.dart';
@@ -15,8 +18,10 @@ import 'package:periodico/Widgets/Widgets/settings.dart';
 import 'package:periodico/Widgets/Widgets/test.dart';
 import 'package:periodico/Widgets/Widgets/themeChooser.dart';
 import 'package:periodico/providers/ThemeHandler.dart';
+import 'package:periodico/services/dataHandler.dart';
 import 'package:provider/provider.dart';
 import 'package:onesignal_flutter/onesignal_flutter.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 
 
@@ -44,6 +49,7 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
+  
   ThemeMode _themeMode = ThemeMode.light;
   void _toggleTheme() {
     setState(() {
@@ -52,33 +58,63 @@ class _MyAppState extends State<MyApp> {
           
     });
   }
+  List datos1=[];
+  late Uint8List datos2;
+  Future<void> cargarDatos() async {
+    datos1 = await UserServices().getTitles();
+    datos2=await UserServices().getThumbnail();
+    final prefs = await SharedPreferences.getInstance();
+    final testBool=await UserServices().checkDate();
+    print("+++++++++++++++++++++++++++++++${testBool.toString()}");
+    print(datos2);
+  }
 
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider(
-      create: (context) => ThemeHandler(),
-      builder: (context, child) {
-        //final theme = Provider.of<ThemeHandler>(context);
-        return MaterialApp(
-          theme: Provider.of<ThemeHandler>(context).theme,
-          routes: {
-            '/home': (context) => Home(),
-            '/search': (context) => Search(),
-            '/downloads': (context) => Downloads(),
-            '/settings': (context) => Ajustes(),
-            '/details': (context) => Details(),
-            '/pdfViewer': (context) => PdfViewerW(),
-            '/searchResult': (context) => searchResult(),
-            '/genreSelected': (context) => GenreSelected(),
-            '/notification': (context) => testScreen(),
-            '/account': (context) => Account(),
-            '/favourites': (context) => Favourite(),
-            '/themeChooser': (context) => ThemeChooser(),
-            '/login': (context) => LoginPage(),
-          },
-          initialRoute: '/home',
-          debugShowCheckedModeBanner: false,
-        );
+    return FutureBuilder(
+      future: cargarDatos(),
+      builder: (context,snapshot){
+        if(snapshot.connectionState==ConnectionState.waiting){
+          return MaterialApp(
+            debugShowCheckedModeBanner: false,
+            home: Scaffold(
+              backgroundColor: Color(0xFF5CCB5F),
+              body: Center(
+                    child:SpinKitWave(
+                      color: Colors.white,
+                      size: 50.0,
+                    ),
+              ),
+            ),
+          );
+        }else{
+          return ChangeNotifierProvider(
+        create: (context) => ThemeHandler(),
+        builder: (context, child) {
+          //final theme = Provider.of<ThemeHandler>(context);
+          return MaterialApp(
+            theme: Provider.of<ThemeHandler>(context).theme,
+            routes: {
+              '/home': (context) => Home(notas: datos1!,imagenPDF: datos2),
+              '/search': (context) => Search(),
+              '/downloads': (context) => Downloads(),
+              '/settings': (context) => Ajustes(),
+              '/details': (context) => Details(),
+              '/pdfViewer': (context) => PdfViewerW(),
+              '/searchResult': (context) => searchResult(),
+              '/genreSelected': (context) => GenreSelected(),
+              '/notification': (context) => testScreen(),
+              '/account': (context) => Account(),
+              '/favourites': (context) => Favourite(),
+              '/themeChooser': (context) => ThemeChooser(),
+              '/login': (context) => LoginPage(),
+            },
+            initialRoute: '/home',
+            debugShowCheckedModeBanner: false,
+          );
+        },
+      );
+        }
       },
     );
   }

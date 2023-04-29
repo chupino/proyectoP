@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:onesignal_flutter/onesignal_flutter.dart';
 import 'package:provider/provider.dart';
@@ -275,7 +276,11 @@ class _CustomCardTagsState extends State<CustomCardTags> {
   void _enviarPortal(String url) async {
     if (await canLaunchUrl(Uri.parse(url))) {
       await launchUrl(
+        
         Uri.parse(url),
+        webViewConfiguration: WebViewConfiguration(enableJavaScript: true,enableDomStorage: true,headers: {"url":url}),
+        mode: LaunchMode.externalApplication
+        
         );
     } else {
       throw 'No se pudo abrir $url';
@@ -299,12 +304,12 @@ class _CustomCardTagsState extends State<CustomCardTags> {
                 children: [
                   Padding(
                     padding: const EdgeInsets.symmetric(vertical: 8),
-                    child: Image.network(
-                      image,
-                      fit: BoxFit.cover,
+                    child: CachedNetworkImage(
+                      imageUrl: image,
                       height: 100,
-                      width: 150,
-                    ),
+                      width: 125,
+                      fit: BoxFit.fill,
+                      )
                   ),
                   Text(title,
                       style: TextStyle(
