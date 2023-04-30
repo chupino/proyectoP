@@ -1,10 +1,12 @@
 
+import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:syncfusion_flutter_pdfviewer/pdfviewer.dart';
 import 'package:http/http.dart' as http;
 import 'package:encrypt/encrypt.dart' as cy;
@@ -15,8 +17,20 @@ class pdfViewers{
   FutureBuilder pdfViewerBytes(){
     
     Future<Uint8List> pdfBytes () async{
+      final prefs=await SharedPreferences.getInstance();
+      final data=await prefs.getString("datosThumbnail")!;
+      final dataDecode=json.decode(data);
+      final fechaString=dataDecode["fecha"];
+      print(fechaString);
+      DateFormat format=DateFormat("dd-MM-yyyy");
+      DateTime ahora=DateFormat("dd-MM-yyyy").parse(fechaString);
+      String ahoraString=format.format(ahora);
+      print(ahoraString);
+      print(ahora);
+      String url="https://diarioelpueblo.com.pe/wp-content/uploads/${ahora.year}/${ahora.month.toString().padLeft(2, '0')}/${ahoraString}.pdf";
+      print("******************************$url");
     try{
-      final response=await http.get(Uri.parse("https://diarioelpueblo.com.pe/wp-content/uploads/2023/04/26-04-2023.pdf"));
+      final response=await http.get(Uri.parse(url));
       Uint8List data=response.bodyBytes;
       print(data.runtimeType);
       return data;
@@ -47,7 +61,7 @@ class pdfViewers{
   }
   return FutureBuilder(
     future: pdfBytes(),
-    builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
+    builder: (context,snapshot) {
 
     if(snapshot.hasData){
       return Scaffold(
@@ -58,8 +72,8 @@ class pdfViewers{
         IconButton(onPressed: (){controller.zoomLevel=controller.zoomLevel-0.5;}, icon: Icon(Icons.zoom_out)),
         IconButton(onPressed: (){savePdf(context);}, icon: Icon(Icons.download))
       ]),
-      body: SfPdfViewer.network(
-          "https://diarioelpueblo.com.pe/wp-content/uploads/2023/04/26-04-2023.pdf",
+      body: SfPdfViewer.memory(
+          snapshot.data!,
           controller: controller,),
     );
     }else{

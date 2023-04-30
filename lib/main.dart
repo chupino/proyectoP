@@ -1,4 +1,5 @@
 
+import 'dart:convert';
 import 'dart:typed_data';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
@@ -61,12 +62,24 @@ class _MyAppState extends State<MyApp> {
   List datos1=[];
   late Uint8List datos2;
   Future<void> cargarDatos() async {
-    datos1 = await UserServices().getTitles();
-    datos2=await UserServices().getThumbnail();
-    final prefs = await SharedPreferences.getInstance();
-    final testBool=await UserServices().checkDate();
-    print("+++++++++++++++++++++++++++++++${testBool.toString()}");
+    final prefs=await SharedPreferences.getInstance();
+   try {
+    datos1 = await UserServices().getTitles();  
+    bool testBool = await UserServices().checkDate().timeout(Duration(minutes: 2));
+    if(testBool){
+      datos2 = await UserServices().getThumbnail();
+    }else{
+      final data=await prefs.getString("datosThumbnail")!;
+      final Map<String,dynamic> datos=json.decode(data);
+      String mapaBytes=datos["bytes"];
+      Uint8List bitesparaPasar=base64Decode(mapaBytes);
+      print("++++++++++++++++${mapaBytes.runtimeType}");
+      datos2=bitesparaPasar;
+    }
     print(datos2);
+  } catch (e) {
+    print("Ha ocurrido un error: $e");
+  }
   }
 
   @override
