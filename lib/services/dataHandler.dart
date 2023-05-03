@@ -482,8 +482,17 @@ class UserServices {
       final switchStates = <String, dynamic>{};
       
       for (final key in keys) {
-        switchStates[key] = prefs.getBool(key) ?? false;
+        print(key);
+        final value=await prefs.get(key);
+        print(value);
+        if(value.toString()=="true" || value.toString()=="false"){
+          switchStates[key] = prefs.getBool(key) ?? false;
+
+        }
+
       }
+      
+      print(switchStates);
       return switchStates;
     }catch(e){
       print("Error: $e");

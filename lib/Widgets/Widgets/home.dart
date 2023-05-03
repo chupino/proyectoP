@@ -148,6 +148,7 @@ Container test(){
   }
 
   AppBar appBarLogo(BuildContext context) {
+    
     return AppBar(
       iconTheme: IconThemeData(
           size: 40.0, color: Theme.of(context).colorScheme.onPrimary),
@@ -205,6 +206,16 @@ Container test(){
   }
 
   SingleChildScrollView corresponsalPage() {
+    Color colorBoton=Theme.of(context).hoverColor;
+    MaterialStateProperty<Color> materialColorBoton=MaterialStateProperty.resolveWith((Set<MaterialState> states) {
+      if(states.contains(MaterialState.hovered)){
+        return colorBoton.withOpacity(0.4);
+      }
+      if(states.contains(MaterialState.focused) || states.contains(MaterialState.pressed)){
+        return colorBoton.withOpacity(0.8);
+      }
+      return colorBoton;
+    });
     return SingleChildScrollView(
       child: Container(
         padding: EdgeInsets.symmetric(horizontal: 30, vertical: 20),
@@ -266,6 +277,7 @@ Container test(){
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
                   ElevatedButton(
+                    
                     onPressed: () {
                       if (_textController.text.trim().isNotEmpty) {
                         _enviarMensajeWhatsApp();
@@ -283,6 +295,7 @@ Container test(){
                       style: TextStyle(fontSize: 20),
                     ),
                     style: ButtonStyle(
+                      backgroundColor: materialColorBoton,
                       padding: MaterialStateProperty.all<EdgeInsets>(
                         EdgeInsets.symmetric(horizontal: 32, vertical: 16),
                       ),

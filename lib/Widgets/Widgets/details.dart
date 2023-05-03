@@ -224,7 +224,7 @@ class _DetailsState extends State<Details> {
                     ),
                   );
                 } else {
-                  return const Center(child: CircularProgressIndicator());
+                  return Center(child: CircularProgressIndicator(color: Theme.of(context).hoverColor,));
                 }
               },
             );

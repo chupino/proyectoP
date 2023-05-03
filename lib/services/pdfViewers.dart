@@ -31,9 +31,14 @@ class pdfViewers{
       print("******************************$url");
     try{
       final response=await http.get(Uri.parse(url));
-      Uint8List data=response.bodyBytes;
-      print(data.runtimeType);
-      return data;
+      if(response.statusCode==200){
+        Uint8List data=response.bodyBytes;
+        print(data.runtimeType);
+        return data;
+      }else{
+        throw "error200";
+      }
+ 
     }catch(e){
       throw "error";
     }

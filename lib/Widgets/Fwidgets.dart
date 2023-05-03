@@ -301,23 +301,26 @@ class _CustomCardTagsState extends State<CustomCardTags> {
             width: MediaQuery.of(context).size.width / 2 - 20,
             height: MediaQuery.of(context).size.height * 0.2,
             child: Center(
-              child: Column(
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 8),
-                    child: CachedNetworkImage(
-                      imageUrl: image,
-                      height: 100,
-                      width: 125,
-                      fit: BoxFit.fill,
-                      )
-                  ),
-                  Text(title,
-                      style: TextStyle(
-                        fontSize: 25,
-                        color: Theme.of(context).scaffoldBackgroundColor
-                      )),
-                ],
+              child: Padding(
+                padding: const EdgeInsets.symmetric(vertical:8.0),
+                child: Column(
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 8),
+                      child: CachedNetworkImage(
+                        imageUrl: image,
+                        height: MediaQuery.of(context).size.height * 0.2-62,
+                        width: MediaQuery.of(context).size.width / 2 - 60,
+                        fit: BoxFit.fill,
+                        )
+                    ),
+                    Text(title,
+                        style: TextStyle(
+                          fontSize: 25,
+                          color: Theme.of(context).scaffoldBackgroundColor
+                        )),
+                  ],
+                ),
               ),
             ),
           ),
