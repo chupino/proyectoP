@@ -30,17 +30,17 @@ class ThemeHandler with ChangeNotifier {
     scaffoldBackgroundColor: Color(0xFFFFFFFF),
     //iconTheme: IconThemeData(color: Color(0xFFdd3333)),
     colorScheme: ColorScheme.fromSwatch(
-      primarySwatch: MaterialColor(0xFFdd3333, {
-        50: Color(0xFFf4d7d7),
-        100: Color(0xFFe3a3a3),
-        200: Color(0xFFd37070),
-        300: Color(0xFFc03c3c),
-        400: Color(0xFFb31a1a),
-        500: Color(0xFFa60000),
-        600: Color(0xFF9d0000),
-        700: Color(0xFF930000),
-        800: Color(0xFF8a0000),
-        900: Color(0xFF790000),
+      primarySwatch: MaterialColor(0xFFffffff, {
+        50: Color(0xFFffffff),
+        100: Color(0xFFffffff),
+        200: Color(0xFFffffff),
+        300: Color(0xFFffffff),
+        400: Color(0xFFffffff),
+        500: Color(0xFFffffff),
+        600: Color(0xFFffffff),
+        700: Color(0xFFffffff),
+        800: Color(0xFFffffff),
+        900: Color(0xFFffffff),
       }), // este color se usa para los botones de navegación
     ),
     canvasColor: Color(0xFF98ff96),

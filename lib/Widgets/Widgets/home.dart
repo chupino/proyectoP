@@ -26,12 +26,14 @@ import '../Fwidgets.dart';
 class Home extends StatefulWidget {
   final List notas;
   final Uint8List imagenPDF;
+  final String fecha;
   @override
   _HomePageState createState() => _HomePageState();
 
   Home({
     required this.notas,
-    required this.imagenPDF
+    required this.imagenPDF,
+    required this.fecha,
   });
 }
 
@@ -371,7 +373,7 @@ Container test(){
                     }));
               } else {
                 return Center(
-                  child: CircularProgressIndicator(),
+                  child: CircularProgressIndicator(color: Theme.of(context).hoverColor,),
                 );
               }
             }));
@@ -570,6 +572,7 @@ return FutureBuilder(
 
   Widget miniatura(BuildContext context){
     final Uint8List imagen=widget.imagenPDF;
+    final fechaParametro=widget.fecha;
 
     if(imagen.isNotEmpty){
           return GestureDetector(
@@ -599,7 +602,7 @@ return FutureBuilder(
                               child: Container(
                                 padding: EdgeInsets.symmetric(horizontal: 10),
                                 child: 
-                                  CachedMemoryImage(bytes: imagen, uniqueKey: '1',)
+                                  Image.memory(imagen)
                                 ,
                               ),
                             ),

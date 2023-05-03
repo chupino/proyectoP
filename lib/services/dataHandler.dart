@@ -138,10 +138,12 @@ class UserServices {
 
         if(fechaGuardadaDate!=fechaAhoraDate){
           //Descargar nuevo pdf
+          print("$fechaGuardadaDate vs $fechaAhoraDate");
           print("1");
           return true;
         }else{
           //quedarse (no hacer nada)
+          print("$fechaGuardadaDate vs $fechaAhoraDate");
           print("2");
           return false;
         }
@@ -149,11 +151,13 @@ class UserServices {
         //Si es que son las 6 y no hay pdf 
         if(fechaGuardadaDate!=fechaPasadaFormateadaDate){
           //descargar nuevo pdf
-          print("$fechaGuardada vs $fechaPasadaFormateadaDate");
+          
+          print("$fechaGuardadaDate vs $fechaPasadaFormateadaDate");
           print("3");
           return true;
         }else{
           //no hacer nada
+          print("$fechaGuardadaDate vs $fechaPasadaFormateadaDate");
           print("4");
           return false;
         }
@@ -162,11 +166,13 @@ class UserServices {
       //si es que no son mas de las 6
       if(fechaGuardadaDate!=fechaPasadaFormateadaDate){
         //descargar nuevo pdf
+        print("$fechaGuardadaDate vs $fechaPasadaFormateadaDate");
         print("5");
         return true;
       }else{
         //no hacer nada
         print("6");
+        print("$fechaGuardadaDate vs $fechaPasadaFormateadaDate");
         return false;
       }
     }
@@ -244,7 +250,16 @@ class UserServices {
       String mesPasado=fechaPasada.month.toString().padLeft(2, '0');;
       String anioPasado=fechaPasada.year.toString();
 
-      final response2=await http.get(Uri.parse("https://diarioelpueblo.com.pe/wp-content/uploads/$anioPasado/$mesPasado/$fechaFormateadaPasada.pdf"));
+      http.Response response2=await http.get(Uri.parse("https://diarioelpueblo.com.pe/wp-content/uploads/$anioPasado/$mesPasado/$fechaFormateadaPasada.pdf"));
+      
+      while(response2.headers['content-type']!="application/pdf"){
+        fechaPasada=fechaPasada.subtract(Duration(days: 1));
+        fechaFormateadaPasada=format.format(fechaPasada);
+        mesPasado=fechaPasada.month.toString().padLeft(2, '0');;
+        anioPasado=fechaPasada.year.toString();
+        response2=await http.get(Uri.parse("https://diarioelpueblo.com.pe/wp-content/uploads/$anioPasado/$mesPasado/$fechaFormateadaPasada.pdf"));
+        print(fechaPasada);
+      }
       final Uint8List bytes=response2.bodyBytes;
 
       PdfDocument document=await PdfDocument.openData(bytes);
@@ -461,13 +476,20 @@ class UserServices {
   }
 
   Future<Map<String, dynamic>> getAllSwitchStates() async {
-    final prefs = await SharedPreferences.getInstance();
-    final keys = prefs.getKeys();
-    final switchStates = <String, dynamic>{};
-    for (final key in keys) {
-      switchStates[key] = prefs.getBool(key) ?? false;
+    try{
+      final prefs = await SharedPreferences.getInstance();
+      final keys = prefs.getKeys();
+      final switchStates = <String, dynamic>{};
+      
+      for (final key in keys) {
+        switchStates[key] = prefs.getBool(key) ?? false;
+      }
+      return switchStates;
+    }catch(e){
+      print("Error: $e");
+      return {};
     }
-    return switchStates;
+
   }
 
   Future<void> initKeys() async {

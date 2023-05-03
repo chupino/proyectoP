@@ -77,7 +77,7 @@ class pdfViewers{
           controller: controller,),
     );
     }else{
-      return CircularProgressIndicator();
+      return CircularProgressIndicator(color: Theme.of(context).hoverColor,);
     }}
     
   );

@@ -46,7 +46,6 @@ class _navBarState extends State<navBar> {
     switch (value) {
       case 0:
         Navigator.pushReplacementNamed(context, '/home');
-
         break;
       case 1:
         Navigator.pushReplacementNamed(context, '/search');
@@ -67,6 +66,7 @@ class _navBarState extends State<navBar> {
     return BottomNavigationBar(
       backgroundColor: Theme.of(context).primaryColor,
       unselectedItemColor: Theme.of(context).primaryColorLight,
+      
       type: BottomNavigationBarType.fixed,
       iconSize: 30,
       items: <BottomNavigationBarItem>[
@@ -76,6 +76,7 @@ class _navBarState extends State<navBar> {
             color: Theme.of(context).primaryColorLight,
           ),
           label: "INICIO",
+
           activeIcon: IconWithBackground(icon: Icons.home, backgroundColor: Colors.red)
         ),
         BottomNavigationBarItem(
@@ -106,7 +107,7 @@ class _navBarState extends State<navBar> {
       currentIndex: _selectedIndex,
       onTap: _setIndex,
       unselectedLabelStyle: TextStyle(color: Colors.white),
-      selectedLabelStyle: TextStyle(color: Colors.white),
+      selectedLabelStyle: TextStyle(fontSize: 15),
     );
   }
 }

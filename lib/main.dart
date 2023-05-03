@@ -1,6 +1,7 @@
 
 import 'dart:convert';
 import 'dart:typed_data';
+import 'package:flutter_animate/flutter_animate.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
@@ -8,10 +9,12 @@ import 'package:intl/date_symbol_data_local.dart';
 import 'package:periodico/Widgets/Widgets/account.dart';
 import 'package:periodico/Widgets/Widgets/details.dart';
 import 'package:periodico/Widgets/Widgets/downloads.dart';
+import 'package:periodico/Widgets/Widgets/errorScreen.dart';
 import 'package:periodico/Widgets/Widgets/favouriteTags.dart';
 import 'package:periodico/Widgets/Widgets/genreSelected.dart';
 import 'package:periodico/Widgets/Widgets/home.dart';
 import 'package:periodico/Widgets/Widgets/login.dart';
+import 'package:periodico/Widgets/Widgets/logoCargando.dart';
 import 'package:periodico/Widgets/Widgets/pdfViewer.dart';
 import 'package:periodico/Widgets/Widgets/search.dart';
 import 'package:periodico/Widgets/Widgets/searchResult.dart';
@@ -23,6 +26,7 @@ import 'package:periodico/services/dataHandler.dart';
 import 'package:provider/provider.dart';
 import 'package:onesignal_flutter/onesignal_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:shimmer/shimmer.dart';
 
 
 
@@ -41,6 +45,7 @@ void main() async {
   OneSignal.shared.promptUserForPushNotificationPermission().then((accepted) {
     print("Accepted permission: $accepted");
   });
+  UserServices().initKeys();
 }
 
 class MyApp extends StatefulWidget {
@@ -60,12 +65,15 @@ class _MyAppState extends State<MyApp> {
     });
   }
   List datos1=[];
+  bool errorFatal=false;
+  String fechaGuardada="";
   late Uint8List datos2;
   Future<void> cargarDatos() async {
     final prefs=await SharedPreferences.getInstance();
    try {
     datos1 = await UserServices().getTitles();  
-    bool testBool = await UserServices().checkDate().timeout(Duration(minutes: 2));
+    bool testBool = await UserServices().checkDate();
+    print("---------------------$testBool");
     if(testBool){
       datos2 = await UserServices().getThumbnail();
     }else{
@@ -75,9 +83,11 @@ class _MyAppState extends State<MyApp> {
       Uint8List bitesparaPasar=base64Decode(mapaBytes);
       print("++++++++++++++++${mapaBytes.runtimeType}");
       datos2=bitesparaPasar;
+      fechaGuardada=datos["bytes"];
     }
     print(datos2);
   } catch (e) {
+    errorFatal=true;
     print("Ha ocurrido un error: $e");
   }
   }
@@ -93,10 +103,19 @@ class _MyAppState extends State<MyApp> {
             home: Scaffold(
               backgroundColor: Color(0xFF5CCB5F),
               body: Center(
-                    child:SpinKitWave(
-                      color: Colors.white,
-                      size: 50.0,
-                    ),
+                    child:Shimmer(
+  period: Duration(milliseconds: 1500),
+  direction: ShimmerDirection.ltr,
+  gradient: LinearGradient(
+    colors: [
+      Colors.white,
+      Colors.black,
+      Colors.white,
+    ],
+    stops: [0.0, 0.5, 1.0],
+  ),
+  child: Image.asset("assets/logo.png",height: 200,width: 250,),
+)
               ),
             ),
           );
@@ -108,7 +127,7 @@ class _MyAppState extends State<MyApp> {
           return MaterialApp(
             theme: Provider.of<ThemeHandler>(context).theme,
             routes: {
-              '/home': (context) => Home(notas: datos1!,imagenPDF: datos2),
+              '/home': (context) => Home(notas: datos1!,imagenPDF: datos2,fecha: fechaGuardada),
               '/search': (context) => Search(),
               '/downloads': (context) => Downloads(),
               '/settings': (context) => Ajustes(),
@@ -121,8 +140,9 @@ class _MyAppState extends State<MyApp> {
               '/favourites': (context) => Favourite(),
               '/themeChooser': (context) => ThemeChooser(),
               '/login': (context) => LoginPage(),
+              '/error':(context)=> ErrorScreen()
             },
-            initialRoute: '/home',
+            initialRoute: errorFatal?'/error':'/home',
             debugShowCheckedModeBanner: false,
           );
         },
