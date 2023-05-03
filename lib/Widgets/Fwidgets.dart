@@ -312,6 +312,7 @@ class _CustomCardTagsState extends State<CustomCardTags> {
                         height: MediaQuery.of(context).size.height * 0.2-62,
                         width: MediaQuery.of(context).size.width / 2 - 60,
                         fit: BoxFit.fill,
+                        
                         )
                     ),
                     Text(title,

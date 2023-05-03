@@ -71,7 +71,7 @@ class _MyAppState extends State<MyApp> {
   Future<void> cargarDatos() async {
     final prefs=await SharedPreferences.getInstance();
    try {
-    datos1 = await UserServices().getTitles();  
+    datos1 = await UserServices().getNoticias();  
     bool testBool = await UserServices().checkDate();
     print("---------------------$testBool");
     if(testBool){

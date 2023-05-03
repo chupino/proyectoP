@@ -2,22 +2,14 @@
 
 import 'dart:io';
 import 'dart:typed_data';
-import 'dart:ui';
 
-import 'package:cached_memory_image/cached_memory_image.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:onesignal_flutter/onesignal_flutter.dart';
-import 'package:pdf_render/pdf_render_widgets.dart';
-import 'package:periodico/Widgets/Widgets/pdfViewer.dart';
 import 'package:periodico/services/dataHandler.dart';
 import 'package:periodico/services/pdfViewers.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'package:pdf_render/pdf_render.dart' as pr;
-import 'package:http/http.dart' as http;
-import 'package:encrypt/encrypt.dart' as cy;
 
 
 import '../../providers/ThemeHandler.dart';
@@ -28,9 +20,10 @@ class Home extends StatefulWidget {
   final Uint8List imagenPDF;
   final String fecha;
   @override
+  // ignore: library_private_types_in_public_api
   _HomePageState createState() => _HomePageState();
 
-  Home({
+  const Home({super.key, 
     required this.notas,
     required this.imagenPDF,
     required this.fecha,
@@ -39,7 +32,6 @@ class Home extends StatefulWidget {
 
 class _HomePageState extends State<Home> with TickerProviderStateMixin{
   late TabController _tabController;
-  int _selectedIndex = 0;
   late File documentPDF;
   
   final TextEditingController _textController = TextEditingController();
@@ -65,7 +57,7 @@ class _HomePageState extends State<Home> with TickerProviderStateMixin{
           appBar: appBarLogo(context),
           drawer: drawerMenu(context),
           body: TabBarView(
-            physics: NeverScrollableScrollPhysics(),
+            physics: const NeverScrollableScrollPhysics(),
             controller: _tabController,
             children: [
               pageNews(theme),
@@ -74,7 +66,7 @@ class _HomePageState extends State<Home> with TickerProviderStateMixin{
               corresponsalPage(),
             ],
           ),
-          bottomNavigationBar:  navBar(
+          bottomNavigationBar:  const navBar(
             selectedIndex: 0,
             key: Key("0"),
           ),
@@ -103,6 +95,9 @@ Container test(){
         padding: EdgeInsets.zero,
         children: [
           DrawerHeader(
+            decoration: BoxDecoration(
+              color: Theme.of(context).drawerTheme.shadowColor,
+            ),
             child: 
                 Row(
                   children: [
@@ -116,10 +111,10 @@ Container test(){
                         Navigator.of(context).pop();
                       },
                     ),
-                    SizedBox(
+                    const SizedBox(
                       width: 10,
                     ),
-                    Container(
+                    SizedBox(
                   height: 35,
                   child: Image.asset(
                     "assets/logo_blanco.png",
@@ -129,18 +124,12 @@ Container test(){
                 ),
                   ],
                 ),
-                
-                
-              
-            decoration: BoxDecoration(
-              color: Theme.of(context).drawerTheme.shadowColor,
-            ),
           ),
           
           for (var i = 0; i < tags.length; i++)
               ListTile(
-                leading: Text(tags[i]["titulo"],style: TextStyle(fontSize: 20),),
-                trailing: IconButton(icon: Icon(Icons.add),onPressed: (){_enviarPortal(tags[i]["goTo"]);}),
+                leading: Text(tags[i]["titulo"],style: const TextStyle(fontSize: 20),),
+                trailing: IconButton(icon: const Icon(Icons.add),onPressed: (){_enviarPortal(tags[i]["goTo"]);}),
               )
         ],
       ),
@@ -169,7 +158,6 @@ Container test(){
         isScrollable: true,
         indicatorColor: Theme.of(context).primaryColorDark,
         onTap: (value) => setState(() {
-          _selectedIndex = value;
         }),
         controller: _tabController,
         tabs: const [
@@ -191,7 +179,7 @@ Container test(){
   }
 
   void _enviarMensajeWhatsApp() async {
-    final String telefono = '51961811703'; // Número de teléfono de destino
+    const String telefono = '51961811703'; // Número de teléfono de destino
     final String mensaje = _textController.text; // Mensaje a enviar
 
     // El enlace de WhatsApp debe comenzar con "whatsapp://send?phone="
@@ -218,28 +206,28 @@ Container test(){
     });
     return SingleChildScrollView(
       child: Container(
-        padding: EdgeInsets.symmetric(horizontal: 30, vertical: 20),
+        padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 20),
         child: Center(
           child: Column(
             children: [
-              Text(
+              const Text(
                 "Sé un Corresponsal",
                 style: TextStyle(
                   fontSize: 35,
                 ),
                 textAlign: TextAlign.center,
               ),
-              SizedBox(
+              const SizedBox(
                 height: 15,
               ),
-              Text(
+              const Text(
                 "Comparte información valiosa con otros miembros de la comunidad para hacerla más segura.",
                 style: TextStyle(
                   fontSize: 20,
                 ),
                 textAlign: TextAlign.start,
               ),
-              SizedBox(
+              const SizedBox(
                 height: 25,
               ),
               SingleChildScrollView(
@@ -257,11 +245,11 @@ Container test(){
                   controller: _textController,
                   decoration: InputDecoration(
                     focusedBorder: OutlineInputBorder(
-                      borderSide: BorderSide(color: Colors.transparent),
+                      borderSide: const BorderSide(color: Colors.transparent),
                       borderRadius: BorderRadius.circular(20),
                     ),
                     enabledBorder: OutlineInputBorder(
-                      borderSide: BorderSide(
+                      borderSide: const BorderSide(
                         color: Colors.transparent,
                       ),
                       borderRadius: BorderRadius.circular(20),
@@ -270,7 +258,7 @@ Container test(){
                   maxLines: null,
                 ),
               )),
-              SizedBox(
+              const SizedBox(
                 height: 20,
               ),
               Row(
@@ -283,22 +271,22 @@ Container test(){
                         _enviarMensajeWhatsApp();
                       } else {
                         ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
+                          const SnackBar(
                             content: Text('Escribe algo'),
                             duration: Duration(seconds: 2),
                           ),
                         );
                       }
                     },
-                    child: Text(
-                      "Enviar",
-                      style: TextStyle(fontSize: 20),
-                    ),
                     style: ButtonStyle(
                       backgroundColor: materialColorBoton,
                       padding: MaterialStateProperty.all<EdgeInsets>(
-                        EdgeInsets.symmetric(horizontal: 32, vertical: 16),
+                        const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
                       ),
+                    ),
+                    child: const Text(
+                      "Enviar",
+                      style: TextStyle(fontSize: 20),
                     ),
                   ),
                   Flexible(
@@ -316,80 +304,79 @@ Container test(){
     );
   }
 
-  Container lastNews() {
-    return Container(
-        child: FutureBuilder(
-            future: UserServices().getTitles(),
-            builder: (context, snapshot) {
-              if (snapshot.hasData) {
-                return ListView.builder(
-                    itemCount: snapshot.data!.length,
-                    itemBuilder: ((context, index) {
-                      return Container(
-                        child: Column(children: <Widget>[
-                          SizedBox(
-                            width: MediaQuery.of(context).size.width - 20,
-                            child: Divider(
-                              thickness: 1,
-                            ),
-                          ),
-                          GestureDetector(
-                            onTap: () {
-                              Navigator.pushNamed(
-                                context,
-                                "/details",
-                                arguments: {
-                                  "index": index,
-                                },
-                              );
+  FutureBuilder lastNews() {
+    return FutureBuilder(
+        future: UserServices().getNoticias(),
+        builder: (context, snapshot) {
+          if (snapshot.hasData) {
+            return ListView.builder(
+                itemCount: snapshot.data!.length,
+                itemBuilder: ((context, index) {
+                  return Container(
+                    child: Column(children: <Widget>[
+                      SizedBox(
+                        width: MediaQuery.of(context).size.width - 20,
+                        child: const Divider(
+                          thickness: 1,
+                        ),
+                      ),
+                      GestureDetector(
+                        onTap: () {
+                          Navigator.pushNamed(
+                            context,
+                            "/details",
+                            arguments: {
+                              "index": index,
                             },
-                            child: Container(
-                                padding:
-                                    const EdgeInsets.symmetric(vertical: 5),
-                                width: MediaQuery.of(context).size.width - 20,
-                                child: ListTile(
-                                    title: Container(
-                                      width: MediaQuery.of(context).size.width *
-                                          0.7,
-                                      child: Text(
-                                        snapshot.data![index+1]["title"],
-                                        style: TextStyle(
-                                            fontFamily: "Georgia",
-                                            fontSize: 20),
-                                      ),
-                                    ),
-                                    leading: Container(
-                                      width: MediaQuery.of(context).size.width *
-                                          0.3,
-                                      child: snapshot.data![index+1]["image"] !=
-                                              null
-                                          ? Image.network(
-                                              snapshot.data![index+1]["image"],
-                                              fit: BoxFit.cover,
-                                            )
-                                          : const Icon(
-                                              Icons.image,
-                                              size: 50,
-                                            ),
-                                    ),
-                                    subtitle: Container(
-                                      padding: const EdgeInsets.symmetric(
-                                          vertical: 2),
-                                      child: snapshot.data![index+1]["autor"] !=
-                                              null
-                                          ? Text(snapshot.data![index+1]["autor"])
-                                          : Text(""),
-                                    ))),
-                          ),
-                        ]),
-                      );
-                    }));
-              } else {
-                return Center(
-                  child: CircularProgressIndicator(color: Theme.of(context).hoverColor,),
-                );
-              }
-            }));
+                          );
+                        },
+                        child: Container(
+                            padding:
+                                const EdgeInsets.symmetric(vertical: 5),
+                            width: MediaQuery.of(context).size.width - 20,
+                            child: ListTile(
+                                title: SizedBox(
+                                  width: MediaQuery.of(context).size.width *
+                                      0.7,
+                                  child: Text(
+                                    snapshot.data![index+1]["title"],
+                                    style: const TextStyle(
+                                        fontFamily: "Georgia",
+                                        fontSize: 20),
+                                  ),
+                                ),
+                                leading: SizedBox(
+                                  width: MediaQuery.of(context).size.width *
+                                      0.3,
+                                  child: snapshot.data![index+1]["image"] !=
+                                          null
+                                      ? Image.network(
+                                          snapshot.data![index+1]["image"],
+                                          fit: BoxFit.cover,
+                                        )
+                                      : const Icon(
+                                          Icons.image,
+                                          size: 50,
+                                        ),
+                                ),
+                                subtitle: Container(
+                                  padding: const EdgeInsets.symmetric(
+                                      vertical: 2),
+                                  child: snapshot.data![index+1]["autor"] !=
+                                          null
+                                      ? Text(snapshot.data![index+1]["autor"])
+                                      : const Text(""),
+                                ))),
+                      ),
+                    ]),
+                  );
+                }));
+          } else {
+            return Center(
+              child: CircularProgressIndicator(color: Theme.of(context).hoverColor,),
+            );
+          }
+        });
   }
 Widget pageNews(ThemeHandler theme) {
 
@@ -408,98 +395,90 @@ Widget pageNews(ThemeHandler theme) {
 
 
 Widget notas() {
-  final List articulos=widget.notas as List;
+  final List articulos=widget.notas;
   if(articulos.isNotEmpty){
     return ListView.builder(
       shrinkWrap: true,
       primary: false,
       itemCount: articulos.length,
       itemBuilder: (context, index) {
-        return Container(
-                        child: Column(children: <Widget>[
-                          SizedBox(
-                            width: MediaQuery.of(context).size.width - 20,
-                            child: Divider(
-                              thickness: 1,
+        return Column(children: <Widget>[
+          SizedBox(
+            width: MediaQuery.of(context).size.width - 20,
+            child: const Divider(
+              thickness: 1,
+            ),
+          ),
+          GestureDetector(
+            onTap: () {
+              print(index);
+              Navigator.pushNamed(
+                context,
+                "/details",
+                arguments: {
+                  "index": index,
+                  "url": articulos[index]["url"]
+                },
+              );
+            },
+            child: Container(
+                padding:
+                    const EdgeInsets.symmetric(vertical: 5),
+                width: MediaQuery.of(context).size.width - 20,
+                child: ListTile(
+                    title: SizedBox(
+                      width:
+                          MediaQuery.of(context).size.width *
+                              0.7,
+                      child: Text(
+                        articulos[index]["title"]??Container(),
+                        style: const TextStyle(
+                            fontFamily: "Georgia",
+                            fontSize: 20),
+                      ),
+                    ),
+                    leading: SizedBox(
+                      width:
+                          MediaQuery.of(context).size.width *
+                              0.3,
+                      child: articulos[index]
+                                  ["image"] !=
+                              null && articulos[index]["image"] is String
+                          ? CachedNetworkImage(
+                            imageUrl: articulos[index]["image"],
+                            fit: BoxFit.cover,
+                            placeholder: (context,url)=>Container(color:Colors.black12),
+                            errorWidget: (context, url, error) => Container(
+                              color: Colors.black12,
+                              child: const Icon(Icons.error,color: Colors.red,),
                             ),
-                          ),
-                          GestureDetector(
-                            onTap: () {
-                              print(index);
-                              Navigator.pushNamed(
-                                context,
-                                "/details",
-                                arguments: {
-                                  "index": index,
-                                  "url": articulos[index]["url"]
-                                },
-                              );
-                            },
-                            child: Container(
-                                padding:
-                                    const EdgeInsets.symmetric(vertical: 5),
-                                width: MediaQuery.of(context).size.width - 20,
-                                child: ListTile(
-                                    title: Container(
-                                      width:
-                                          MediaQuery.of(context).size.width *
-                                              0.7,
-                                      child: Text(
-                                        articulos[index]["title"]??Container(),
-                                        style: TextStyle(
-                                            fontFamily: "Georgia",
-                                            fontSize: 20),
-                                      ),
-                                    ),
-                                    leading: Container(
-                                      width:
-                                          MediaQuery.of(context).size.width *
-                                              0.3,
-                                      child: articulos[index]
-                                                  ["image"] !=
-                                              null && articulos[index]["image"] is String
-                                          ? CachedNetworkImage(
-                                            imageUrl: articulos[index]["image"],
-                                            fit: BoxFit.cover,
-                                            placeholder: (context,url)=>Container(color:Colors.black12),
-                                            errorWidget: (context, url, error) => Container(
-                                              color: Colors.black12,
-                                              child: Icon(Icons.error,color: Colors.red,),
-                                            ),
-                                            )
-                                          
-                                          /*Image.network(
-                                              articulos[index]
-                                                  ["image"],
-                                              fit: BoxFit.cover,
-                                            )*/
-                                          : const Icon(
-                                              Icons.image,
-                                              size: 50,
-                                            ),
-                                    ),
-                                    subtitle: Container(
-                                      padding: const EdgeInsets.symmetric(
-                                          vertical: 2),
-                                      child: articulos[index]
-                                                  ["autor"] !=
-                                              null
-                                          ? Text(articulos[index]
-                                              ["autor"])
-                                          : Text(""),
-                                    ))),
-                          ),
-                        ]),
-                      );
+                            )
+                          : const Icon(
+                              Icons.image,
+                              size: 50,
+                            ),
+                    ),
+                    subtitle: Container(
+                      padding: const EdgeInsets.symmetric(
+                          vertical: 2),
+                      child: articulos[index]
+                                  ["autor"] !=
+                              null
+                          ? Text(articulos[index]
+                              ["autor"])
+                          : const Text(""),
+                    ))),
+          ),
+        ]);
       },
     );
   }else{
-    return Container(child: Text("No hay información"),);
+    return const Text("No hay información");
   }
 }
 Widget articles() {
 return FutureBuilder(
-              future: UserServices().getTitles(),
+              future: UserServices().getNoticias(),
               builder: ((context, snapshot) {
                 if (snapshot.hasData) {
                   return ListView.builder(
@@ -507,76 +486,73 @@ return FutureBuilder(
                     primary: false,
                     itemCount: snapshot.data!.length,
                     itemBuilder: ((context, index) {
-                      return Container(
-                        child: Column(children: <Widget>[
-                          SizedBox(
-                            width: MediaQuery.of(context).size.width - 20,
-                            child: Divider(
-                              thickness: 1,
-                            ),
+                      return Column(children: <Widget>[
+                        SizedBox(
+                          width: MediaQuery.of(context).size.width - 20,
+                          child: const Divider(
+                            thickness: 1,
                           ),
-                          GestureDetector(
-                            onTap: () {
-                              print(index);
-                              Navigator.pushNamed(
-                                context,
-                                "/details",
-                                arguments: {
-                                  "index": index,
-                                  "url": snapshot.data![index]["url"]
-                                },
-                              );
-                            },
-                            child: Container(
-                                padding:
-                                    const EdgeInsets.symmetric(vertical: 5),
-                                width: MediaQuery.of(context).size.width - 20,
-                                child: ListTile(
-                                    title: Container(
-                                      width:
-                                          MediaQuery.of(context).size.width *
-                                              0.7,
-                                      child: Text(
-                                        snapshot.data![index]["title"]??Container(),
-                                        style: TextStyle(
-                                            fontFamily: "Georgia",
-                                            fontSize: 20),
-                                      ),
+                        ),
+                        GestureDetector(
+                          onTap: () {
+                            Navigator.pushNamed(
+                              context,
+                              "/details",
+                              arguments: {
+                                "index": index,
+                                "url": snapshot.data![index]["url"]
+                              },
+                            );
+                          },
+                          child: Container(
+                              padding:
+                                  const EdgeInsets.symmetric(vertical: 5),
+                              width: MediaQuery.of(context).size.width - 20,
+                              child: ListTile(
+                                  title: SizedBox(
+                                    width:
+                                        MediaQuery.of(context).size.width *
+                                            0.7,
+                                    child: Text(
+                                      snapshot.data![index]["title"]??Container(),
+                                      style: const TextStyle(
+                                          fontFamily: "Georgia",
+                                          fontSize: 20),
                                     ),
-                                    leading: Container(
-                                      width:
-                                          MediaQuery.of(context).size.width *
-                                              0.3,
-                                      child: snapshot.data![index]
-                                                  ["image"] !=
-                                              null && snapshot.data![index]["image"] is String
-                                          ? Image.network(
-                                              snapshot.data![index]
-                                                  ["image"],
-                                              fit: BoxFit.cover,
-                                            )
-                                          : const Icon(
-                                              Icons.image,
-                                              size: 50,
-                                            ),
-                                    ),
-                                    subtitle: Container(
-                                      padding: const EdgeInsets.symmetric(
-                                          vertical: 2),
-                                      child: snapshot.data![index]
-                                                  ["autor"] !=
-                                              null
-                                          ? Text(snapshot.data![index]
-                                              ["autor"])
-                                          : Text(""),
-                                    ))),
-                          ),
-                        ]),
-                      );
+                                  ),
+                                  leading: SizedBox(
+                                    width:
+                                        MediaQuery.of(context).size.width *
+                                            0.3,
+                                    child: snapshot.data![index]
+                                                ["image"] !=
+                                            null && snapshot.data![index]["image"] is String
+                                        ? Image.network(
+                                            snapshot.data![index]
+                                                ["image"],
+                                            fit: BoxFit.cover,
+                                          )
+                                        : const Icon(
+                                            Icons.image,
+                                            size: 50,
+                                          ),
+                                  ),
+                                  subtitle: Container(
+                                    padding: const EdgeInsets.symmetric(
+                                        vertical: 2),
+                                    child: snapshot.data![index]
+                                                ["autor"] !=
+                                            null
+                                        ? Text(snapshot.data![index]
+                                            ["autor"])
+                                        : const Text(""),
+                                  ))),
+                        ),
+                      ]);
                     }),
                   );
                 } else {
-                  return Center(child: CircularProgressIndicator(color: Colors.blue,));
+                  return const Center(child: CircularProgressIndicator(color: Colors.blue,));
                 }
               }),
             );
@@ -585,14 +561,12 @@ return FutureBuilder(
 
   Widget miniatura(BuildContext context){
     final Uint8List imagen=widget.imagenPDF;
-    final fechaParametro=widget.fecha;
 
     if(imagen.isNotEmpty){
           return GestureDetector(
                             onTap: (() {
                               setState(() {
                                 _tabController.animateTo(1);
-                                _selectedIndex = 1;
                               });
                             }),
                             child: Container(
@@ -613,7 +587,7 @@ return FutureBuilder(
                                 ),
                               ),
                               child: Container(
-                                padding: EdgeInsets.symmetric(horizontal: 10),
+                                padding: const EdgeInsets.symmetric(horizontal: 10),
                                 child: 
                                   Image.memory(imagen)
                                 ,
@@ -626,9 +600,7 @@ return FutureBuilder(
       
 
     }else{
-      return Container(
-        child: Text("No se pudo cargar el pdf"),
-      );
+      return const Text("No se pudo cargar el pdf");
     }
   }
   FutureBuilder thumbnail(BuildContext context) {
@@ -640,7 +612,6 @@ return FutureBuilder(
                             onTap: (() {
                               DefaultTabController.of(context).index = 1;
                               setState(() {
-                                _selectedIndex = 1;
           
                               });
                             }),
@@ -662,7 +633,7 @@ return FutureBuilder(
                                 ),
                               ),
                               child: Container(
-                                padding: EdgeInsets.symmetric(horizontal: 10),
+                                padding: const EdgeInsets.symmetric(horizontal: 10),
                                 child: 
                                   Image.memory(snapshot.data!,fit: BoxFit.cover,)
                                 ,
@@ -671,7 +642,7 @@ return FutureBuilder(
                           );
           
         }else{
-          return SizedBox(
+          return const SizedBox(
             height: 300,
             width: 300,
             child: Center(
@@ -692,7 +663,7 @@ return FutureBuilder(
         Map valoresNotifiacion = result.notification.additionalData!;
         String postId = valoresNotifiacion["post_id"].toString();
         Navigator.pushNamed(context, "/notification",
-            arguments: {"postId": "$postId"});
+            arguments: {"postId": postId});
         print("++++++++++++${result.notification.additionalData}");
       } catch (e) {
         print("Error en la notificación: $e");

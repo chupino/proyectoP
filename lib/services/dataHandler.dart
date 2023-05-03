@@ -14,8 +14,100 @@ import 'package:timezone/standalone.dart';
 
 class UserServices {
 
+  final List<Map> tags = [
+  {
+    "titulo": "Cultura",
+    "imagenURL": "https://portal.andina.pe/EDPfotografia3/Thumbnail/2017/01/25/000400475W.jpg",
+    "goTo":"https://diarioelpueblo.com.pe/index.php/category/cultura/"
+  },
+  {
+    "titulo": "Deporte",
+    "imagenURL": "https://www.unsa.edu.pe/wp-content/uploads/2020/02/FOTO-FINAL-878x426.png",
+    "goTo":"https://diarioelpueblo.com.pe/index.php/category/deporte/"
+  },
+  {
+    "titulo": "Distritos",
+    "imagenURL": "https://cdn.forbes.pe/2022/05/Arequipa-Agencia-Andina.jpg",
+    "goTo":"https://diarioelpueblo.com.pe/index.php/category/distritos/"
+  },
+  {
+    "titulo": "Economía",
+    "imagenURL": "https://www.comexperu.org.pe/upload/images/sem-1129_economia-210722-075720.jpg",
+    "goTo":"https://diarioelpueblo.com.pe/index.php/category/economia/"
+  },
+  {
+    "titulo": "Editorial",
+    "imagenURL": "https://tiojuan.files.wordpress.com/2020/10/canilla-arequipeno.jpg?w=287",
+    "goTo":"https://diarioelpueblo.com.pe/index.php/category/editorial/"
+  },
+  {
+    "titulo": "Educación",
+    "imagenURL": "https://larepublica.cronosmedia.glr.pe/original/2019/10/12/62b918ffafced5708606eb96.jpg",
+    "goTo":"https://diarioelpueblo.com.pe/index.php/category/educacion/"
+  },
+  {
+    "titulo": "Entrevistas",
+    "imagenURL": "https://soyliterauta.com/wp-content/uploads/2020/10/Entrevista-Periodistica.jpg",
+    "goTo":"https://diarioelpueblo.com.pe/index.php/category/entrevistas/"
+  },
+  {
+    "titulo": "Especiales",
+    "imagenURL": "https://www.alwahotel.com/wp-content/uploads/2016/09/diablo-en-la-catedral-AQP-Diario-El-Pueblo.jpg",
+    "goTo":"https://diarioelpueblo.com.pe/index.php/category/especiales/"
+  },
+  {
+    "titulo": "Internacional",
+    "imagenURL": "https://imagenes.expreso.ec/files/image_700_402/files/fp/uploads/2023/04/11/6435dd3ddd131.r_d.2283-3845-1563.jpeg",
+    "goTo":"https://diarioelpueblo.com.pe/index.php/category/noticias/internacional/"
+  },
+  {
+    "titulo": "Nacional",
+    "imagenURL": "https://diarioelpueblo.com.pe/wp-content/uploads/2023/01/regiones_peru.jpg",
+    "goTo":"https://diarioelpueblo.com.pe/index.php/category/noticias/nacional/"
+  },
+  {
+    "titulo": "Local",
+    "imagenURL": "https://1.bp.blogspot.com/-6wIuXpdp2TA/W4LYY1YtCLI/AAAAAAAATHg/STLxQ27ixoYYbSjv5dzAR8VVDVYIKSBvwCLcBGAs/s1600/IMG_0598.jpg",
+    "goTo":"https://diarioelpueblo.com.pe/index.php/category/noticias/local/",
+  },
+  {
+      "titulo": "Regional",
+      "imagenURL": "https://media.tacdn.com/media/attractions-splice-spp-674x446/07/37/cc/cd.jpg",
+      "goTo":"https://diarioelpueblo.com.pe/index.php/category/noticias/regional/"
+    },
+    {
+      "titulo": "Opinión",
+      "imagenURL": "https://definicion.de/wp-content/uploads/2009/11/opinion-1.jpg",
+      "goTo":"https://diarioelpueblo.com.pe/index.php/category/opinion/"
+    },
+    {
+      "titulo": "Foto Hoy",
+      "imagenURL": "https://i0.wp.com/imgs.hipertextual.com/wp-content/uploads/2016/12/lente-fotografo.jpg",
+      "goTo":"https://diarioelpueblo.com.pe/index.php/category/opinion/foto-hoy/"
+    },
+    {
+      "titulo": "Policiales",
+      "imagenURL": "https://siip3.institutopacifico.pe/assets/uploads/noticias/9FB0A40BE81390584FECE6DD1877D406_1665067495_original.png",
+      "goTo":"https://diarioelpueblo.com.pe/index.php/category/policiales/"
+    },
+    {
+      "titulo": "Política",
+      "imagenURL": "https://live.staticflickr.com/7243/6884581202_2748cdbde7_b.jpg",
+      "goTo":"https://diarioelpueblo.com.pe/index.php/category/politica/"
+    },
+    {
+      "titulo": "Salud",
+      "imagenURL": "https://www.esan.edu.pe/images/blog/2021/11/16/x1500x844-salud-peru-16-11.jpg.pagespeed.ic.2ctF5ObSmS.jpg",
+      "goTo":"https://diarioelpueblo.com.pe/index.php/category/salud/"
+    },
+    {
+      "titulo": "Turismo",
+      "imagenURL": "https://denomades.s3.us-west-2.amazonaws.com/blog/wp-content/uploads/2016/07/04134751/can%CC%83oncolca.jpg",
+      "goTo":"https://diarioelpueblo.com.pe/index.php/category/turismo/"
+    },
+  ];
   
-  Future<List> getTitles() async {
+  Future<List> getNoticias() async {
     final url =
         "https://diarioelpueblo.com.pe/wp-json/wp/v2/posts/";
     Uri urlUri = Uri.parse(url);
@@ -29,80 +121,13 @@ class UserServices {
                 "image": e["urlToImage"],
                 "autor": e["author"],
               })
-          .toList();
-    print(titles);
-    
-    //print(titles[2]);
+          .toList();    
       return titles;
     } else {
-      print("error");
-      return [];
+      throw "Error en la petición http";
     }
   }
-  Future<String> checkThumbnail() async{
-    final responseFecha=await http.get(Uri.parse("http://worldtimeapi.org/api/timezone/America/Lima"));
-    final data=jsonDecode(responseFecha.body);
-    DateTime fechaAhora=DateTime.parse(data["datetime"]);
-    DateFormat format=DateFormat("dd-MM-yyyy");
-    String fechaFormateada=format.format(fechaAhora);
-    String mes="";
-    String anio="";
-    String fechaReal="";
-    final directory=await getApplicationDocumentsDirectory();
-    if(fechaAhora.hour>6 || fechaAhora.hour==6 && fechaAhora.minute>=0){
-      fechaReal=fechaFormateada;
-      mes=fechaAhora.month.toString().padLeft(2, '0');
-      anio=fechaAhora.day.toString();
-    }else{
-      DateTime fechaPasada=fechaAhora.subtract(Duration(days: 1));
-      String fechaFormateadaPasada=format.format(fechaPasada);
-      mes=fechaPasada.month.toString().padLeft(2, '0');;
-      anio=fechaPasada.day.toString();
-      fechaReal=fechaFormateadaPasada;
-    }
-    File thumbnailImage=File("${directory.path}/$fechaReal.png");
-    print(thumbnailImage.path);
-    bool exists=await thumbnailImage.exists();
-    print(exists);
-    if(exists){
-      return thumbnailImage.path;
-    }else{
-      /*
-      final files = directory.listSync();
-      for (final filePng in files) {
-        if (filePng is File && filePng.path.endsWith('.png')) {
-            await filePng.delete();
-        }
-  }*/
-  thumbnailImage.writeAsBytes(await justGetThumbnail(mes, anio, fechaReal));
-  final prefs = await SharedPreferences.getInstance();
-  await prefs.setString("thumbnail", thumbnailImage.path);
-  return thumbnailImage.path;
-
-    }
-  }
-  Future<Uint8List> getThumbnail2()async{
-    final response2=await http.get(Uri.parse("https://diarioelpueblo.com.pe/wp-content/uploads/2023/04/28-04-2023.pdf"));
-    final Uint8List bytes=response2.bodyBytes;
-    PdfDocument document=await PdfDocument.openData(bytes);
-    final page=await document.getPage(1);
-      final image=await page.render();
-      final img=await image.createImageDetached();
-      final bytesImg=await img.toByteData(format: ImageByteFormat.png);
-      final bytesPng=bytesImg!.buffer.asUint8List(bytesImg.offsetInBytes,bytesImg.lengthInBytes);
-      return bytesPng;
-  }
-  Future<Uint8List> justGetThumbnail(String month,String year,String date) async{
-    final response2=await http.get(Uri.parse("https://diarioelpueblo.com.pe/wp-content/uploads/$year/$month/$date.pdf"));
-    final Uint8List bytes=response2.bodyBytes;
-    PdfDocument document=await PdfDocument.openData(bytes);
-    final page=await document.getPage(1);
-      final image=await page.render();
-      final img=await image.createImageDetached();
-      final bytesImg=await img.toByteData(format: ImageByteFormat.png);
-      final bytesPng=bytesImg!.buffer.asUint8List(bytesImg.offsetInBytes,bytesImg.lengthInBytes);
-      return bytesPng;
-  }
+ 
 
   Future<bool> checkDate() async{
     final prefs = await SharedPreferences.getInstance();
@@ -280,157 +305,7 @@ class UserServices {
     }
 
   }
-  final List<Map> tags = [
-  {
-    "titulo": "Cultura",
-    "imagenURL": "https://portal.andina.pe/EDPfotografia3/Thumbnail/2017/01/25/000400475W.jpg",
-    "goTo":"https://diarioelpueblo.com.pe/index.php/category/cultura/"
-  },
-  {
-    "titulo": "Deporte",
-    "imagenURL": "https://www.unsa.edu.pe/wp-content/uploads/2020/02/FOTO-FINAL-878x426.png",
-    "goTo":"https://diarioelpueblo.com.pe/index.php/category/deporte/"
-  },
-  {
-    "titulo": "Distritos",
-    "imagenURL": "https://cdn.forbes.pe/2022/05/Arequipa-Agencia-Andina.jpg",
-    "goTo":"https://diarioelpueblo.com.pe/index.php/category/distritos/"
-  },
-  {
-    "titulo": "Economía",
-    "imagenURL": "https://www.comexperu.org.pe/upload/images/sem-1129_economia-210722-075720.jpg",
-    "goTo":"https://diarioelpueblo.com.pe/index.php/category/economia/"
-  },
-  {
-    "titulo": "Editorial",
-    "imagenURL": "https://tiojuan.files.wordpress.com/2020/10/canilla-arequipeno.jpg?w=287",
-    "goTo":"https://diarioelpueblo.com.pe/index.php/category/editorial/"
-  },
-  {
-    "titulo": "Educación",
-    "imagenURL": "https://larepublica.cronosmedia.glr.pe/original/2019/10/12/62b918ffafced5708606eb96.jpg",
-    "goTo":"https://diarioelpueblo.com.pe/index.php/category/educacion/"
-  },
-  {
-    "titulo": "Entrevistas",
-    "imagenURL": "https://soyliterauta.com/wp-content/uploads/2020/10/Entrevista-Periodistica.jpg",
-    "goTo":"https://diarioelpueblo.com.pe/index.php/category/entrevistas/"
-  },
-  {
-    "titulo": "Especiales",
-    "imagenURL": "https://www.alwahotel.com/wp-content/uploads/2016/09/diablo-en-la-catedral-AQP-Diario-El-Pueblo.jpg",
-    "goTo":"https://diarioelpueblo.com.pe/index.php/category/especiales/"
-  },
-  {
-    "titulo": "Internacional",
-    "imagenURL": "https://imagenes.expreso.ec/files/image_700_402/files/fp/uploads/2023/04/11/6435dd3ddd131.r_d.2283-3845-1563.jpeg",
-    "goTo":"https://diarioelpueblo.com.pe/index.php/category/noticias/internacional/"
-  },
-  {
-    "titulo": "Nacional",
-    "imagenURL": "https://diarioelpueblo.com.pe/wp-content/uploads/2023/01/regiones_peru.jpg",
-    "goTo":"https://diarioelpueblo.com.pe/index.php/category/noticias/nacional/"
-  },
-  {
-    "titulo": "Local",
-    "imagenURL": "https://1.bp.blogspot.com/-6wIuXpdp2TA/W4LYY1YtCLI/AAAAAAAATHg/STLxQ27ixoYYbSjv5dzAR8VVDVYIKSBvwCLcBGAs/s1600/IMG_0598.jpg",
-    "goTo":"https://diarioelpueblo.com.pe/index.php/category/noticias/local/",
-  },
-  {
-      "titulo": "Regional",
-      "imagenURL": "https://media.tacdn.com/media/attractions-splice-spp-674x446/07/37/cc/cd.jpg",
-      "goTo":"https://diarioelpueblo.com.pe/index.php/category/noticias/regional/"
-    },
-    {
-      "titulo": "Opinión",
-      "imagenURL": "https://definicion.de/wp-content/uploads/2009/11/opinion-1.jpg",
-      "goTo":"https://diarioelpueblo.com.pe/index.php/category/opinion/"
-    },
-    {
-      "titulo": "Foto Hoy",
-      "imagenURL": "https://i0.wp.com/imgs.hipertextual.com/wp-content/uploads/2016/12/lente-fotografo.jpg",
-      "goTo":"https://diarioelpueblo.com.pe/index.php/category/opinion/foto-hoy/"
-    },
-    {
-      "titulo": "Policiales",
-      "imagenURL": "https://siip3.institutopacifico.pe/assets/uploads/noticias/9FB0A40BE81390584FECE6DD1877D406_1665067495_original.png",
-      "goTo":"https://diarioelpueblo.com.pe/index.php/category/policiales/"
-    },
-    {
-      "titulo": "Política",
-      "imagenURL": "https://live.staticflickr.com/7243/6884581202_2748cdbde7_b.jpg",
-      "goTo":"https://diarioelpueblo.com.pe/index.php/category/politica/"
-    },
-    {
-      "titulo": "Salud",
-      "imagenURL": "https://www.esan.edu.pe/images/blog/2021/11/16/x1500x844-salud-peru-16-11.jpg.pagespeed.ic.2ctF5ObSmS.jpg",
-      "goTo":"https://diarioelpueblo.com.pe/index.php/category/salud/"
-    },
-    {
-      "titulo": "Turismo",
-      "imagenURL": "https://denomades.s3.us-west-2.amazonaws.com/blog/wp-content/uploads/2016/07/04134751/can%CC%83oncolca.jpg",
-      "goTo":"https://diarioelpueblo.com.pe/index.php/category/turismo/"
-    },
-  ];
-/*
-  Future<Map> getNew(int index) async {
-    final url =
-        "https://newsapi.org/v2/everything?q=tesla&from=2023-03-28&sortBy=publishedAt&apiKey=5025449ded9546259210dcca8c7a5531";
-    Uri urlUri = Uri.parse(url);
-    final response = await http.get(urlUri);
-    if (response.statusCode == 200) {
-      var data = jsonDecode(response.body);
-      var articles = data["articles"] as List;
-      List article = articles
-          .map((e) => {
-                "title": e["title"],
-                "image": e["urlToImage"],
-                "autor": e["author"],
-                "description": e["description"],
-                "content": e["content"],
-                "date": e["publishedAt"],
-              })
-          .toList();
-      Map _article = article[index];
-      print(_article["image"]);
-      String dateString = _article["date"];
-      DateTime date = DateTime.parse(dateString);
-      String dayName = DateFormat.EEEE("es").format(date);
-      String monthName = DateFormat.MMMM("es").format(date);
-      String formattedDate =
-          "$dayName ${date.day} de $monthName del ${date.year}";
 
-      print("FECHA:$formattedDate");
-      _article["date"] = formattedDate;
-      return _article;
-    } else {
-      return {};
-    }
-  }*/
-/*
-  Future<List> searchTitle(String title) async {
-    final url =
-        "https://newsapi.org/v2/everything?qInTitle='{$title}'&language=es&from=2023-03-28&sortBy=publishedAt&apiKey=5025449ded9546259210dcca8c7a5531";
-    Uri uri = Uri.parse(url);
-    final response = await http.get(uri);
-    if (response.statusCode == 200) {
-      var data = jsonDecode(response.body);
-      var articles = data["articles"] as List;
-      var titles = articles
-          .map((e) => {
-                "title": e["title"],
-                "image": e["urlToImage"],
-                "autor": e["author"],
-                "url": url
-              })
-          .toList();
-
-      return titles;
-    } else {
-      print("error");
-      return [];
-    }
-  }*/
   Future<Map> getArticle(int index) async {
     Uri urlUri = Uri.parse("https://diarioelpueblo.com.pe/wp-json/wp/v2/posts/");
     final response = await http.get(urlUri);
