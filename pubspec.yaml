@@ -57,7 +57,7 @@ dependencies:
   timezone: ^0.9.2
   flutter_animate: ^4.1.1+1
   shimmer: ^2.0.0
-
+  syncfusion_flutter_datepicker: ^20.4.54
 
 dev_dependencies:
   flutter_test:
@@ -80,8 +80,11 @@ flutter_icons:
   adaptive_icon_foreground: "assets/ic_launcher_foreground.png" 
 
 flutter_native_splash:
-  color: "#5ccb5f"
-  image: assets/logo_splash.png
+  android: true
+  color: "#7ccb5f"
+  image: assets/logo_sello_blanco.png
+  image_android: assets/logo_sello_blanco.png
+
 
 
 
@@ -99,6 +102,7 @@ flutter:
 
   # To add assets to your application, add an assets section, like this:
   assets:
+    - assets/logo_sello_blanco.png
     - assets/futbolCard.jpeg
     - assets/policiaCard.jpeg
     - assets/politicaCard.jpeg
@@ -115,6 +119,7 @@ flutter:
     - assets/sello.png
     - assets/ic_launcher.png
     - assets/ic_launcher_foreground.png
+    - assets/selloGuapo.png
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware

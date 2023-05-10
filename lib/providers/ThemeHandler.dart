@@ -4,6 +4,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 class ThemeHandler with ChangeNotifier {
   final myThemeLight = ThemeData(
+    
     inputDecorationTheme: InputDecorationTheme(
       iconColor: Colors.black,
   border: OutlineInputBorder(
@@ -11,6 +12,10 @@ class ThemeHandler with ChangeNotifier {
     borderRadius: BorderRadius.all(Radius.circular(50))
     
   ),
+  labelStyle: TextStyle(color: Colors.black),
+  floatingLabelStyle: TextStyle(color: Colors.black,),
+  hoverColor: Color(0xFFdd3333),
+  focusColor: Color(0xFFdd3333),
   focusedBorder: OutlineInputBorder(
     borderSide: BorderSide(color: Colors.black, width: 5),
   ),

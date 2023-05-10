@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:periodico/Widgets/Widgets/bannerLoading.dart';
 import 'package:periodico/Widgets/Widgets/search.dart';
 import 'package:periodico/main.dart';
 
@@ -11,7 +12,7 @@ class ErrorScreen extends StatefulWidget {
 class _ErrorScreenState extends State<ErrorScreen> with TickerProviderStateMixin{
 @override
   Widget build(BuildContext context) {
-    var route = MaterialPageRoute(builder: (context) => MyApp());
+    var route = MaterialPageRoute(builder: (context) => bannerLoading());
     return Scaffold(
               backgroundColor: Color(0xFF5CCB5F),
               body: Center(
