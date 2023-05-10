@@ -57,6 +57,7 @@ class _HomePageState extends State<Home> with TickerProviderStateMixin{
   
   String _selectedOptionClasificados="1";
   String? _selectedProvince='Arequipa';
+  String? _selectedCategory="Varios";
   String? _selectedDistrict="Cercado";
   var _selectedOptionEdictos="1";
     List<String> _provinces = [
@@ -78,10 +79,9 @@ class _HomePageState extends State<Home> with TickerProviderStateMixin{
     'Condesuyos':["Chuquibamba", "Andaray", "Cayarani", "Chichas", "Iray", "Rio Grande", "Salamanca", "Yanaquihua"],
     'Islay':["Mollendo", "Cocachacra", "Dean Valdivia", "Islay", "Mejía", "Punta de Bombón"],
     'La Unión':["Cotahuasi", "Alca", "Charcana", "Huaynacotas", "Pampamarca", "Puyca", "Quechualla", "Sayla", "Tauria", "Tomepampa", "Toro"]
-
   };
   Map<String, List<String>> _categorias={
-    "1":[
+    "Economicos":[
     "Varios",
     "ALQUILER - Casas",
     "ALQUILER - Departamentos",
@@ -96,7 +96,7 @@ class _HomePageState extends State<Home> with TickerProviderStateMixin{
     "Maquinas y equipos",
     "VEHICULOS - Automoviles",
     "VEHICULOS - Camionetas",
-    "Pensiones",
+    "Pensiones",  
     "Valores",
     "Traspasos",
     "Empleos",
@@ -106,7 +106,7 @@ class _HomePageState extends State<Home> with TickerProviderStateMixin{
     "Electrodomesticos",
     "Servicios"
 ],
-    "2":[
+    "Super-Economicos":[
     "Varios",
     "Alquiler",
     "Casas y Terrenos",
@@ -125,6 +125,7 @@ class _HomePageState extends State<Home> with TickerProviderStateMixin{
     "Servicios"
 ]
   };
+  
   TextEditingController _date=TextEditingController();
   
   String? _selectedTipoCliente="1";
@@ -603,6 +604,15 @@ Container test(){
       }
       return false;
     }
+    void contarPalabras(){
+      bool validation=_formKey.currentState!.validate();
+      if(ndiasForm.text.isEmpty || _date.text.isEmpty || contenidoAnuncioForm.text.isEmpty){
+        print("no valido");
+      }
+      else{
+        print("--------------------------------MIRA MI HUEVO");
+      }
+    }
     return Form(
         key: _formKey,
         child: Stepper(
@@ -624,7 +634,10 @@ Container test(){
                               Expanded(child: ElevatedButton(child: Text("Siguiente"),onPressed: (){controls.onStepContinue!();},style: ButtonStyle(backgroundColor: materialColorBoton)),),
                               const SizedBox(width: 12,),
                               Expanded(child: ElevatedButton(child: Text("Atrás"),onPressed: (){controls.onStepCancel!();},style: ButtonStyle(backgroundColor: materialColorBoton2)),),
+                              const SizedBox(width: 12,),
+                              Expanded(child: ElevatedButton(child: Text("Calcular Precio"),onPressed: (){contarPalabras();},style: ButtonStyle(backgroundColor: materialColorBoton2)),),
                             ]),
+
                           );
             }
             if(_currentStep==2){
@@ -806,6 +819,25 @@ Container test(){
                     setState(() {
                       value=="1"?tipoAnuncio="Economicos":tipoAnuncio="Super-Economicos";
                       _selectedOptionClasificados=value!;
+                    });
+                  },
+                ),
+                SizedBox(
+                  height: 50,
+                ),
+                DropdownButtonFormField<String>(
+                
+                icon: Icon(Icons.new_releases),
+                  decoration: const InputDecoration(
+                    border:OutlineInputBorder(borderSide: BorderSide(width: 1),
+                    borderRadius: BorderRadius.all(Radius.circular(16.0))),
+                    labelText: "Sección"
+                    ),
+                  value: _selectedCategory,
+                  items: _categorias[tipoAnuncio]?.map((subcategoria) {return DropdownMenuItem<String>(child: Text(subcategoria),value: subcategoria);} ).toList(),
+                  onChanged: (value) {
+                    setState(() {
+                      _selectedCategory=value;
                     });
                   },
                 ),
@@ -1347,7 +1379,7 @@ Container test(){
                   )),
                   TableCell(child: Container(
                     padding: EdgeInsets.all(8),
-                    child: Text("x"),
+                    child: Text(_selectedCategory.toString()),
                   )),
                 ]
               ),
