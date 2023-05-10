@@ -79,12 +79,52 @@ class _HomePageState extends State<Home> with TickerProviderStateMixin{
     'Islay':["Mollendo", "Cocachacra", "Dean Valdivia", "Islay", "Mejía", "Punta de Bombón"],
     'La Unión':["Cotahuasi", "Alca", "Charcana", "Huaynacotas", "Pampamarca", "Puyca", "Quechualla", "Sayla", "Tauria", "Tomepampa", "Toro"]
 
-
-
-
-
   };
-  
+  Map<String, List<String>> _categorias={
+    "1":[
+    "Varios",
+    "ALQUILER - Casas",
+    "ALQUILER - Departamentos",
+    "ALQUILER - Locales",
+    "CASAS Y TERRENOS - Casas",
+    "CASAS Y TERRENOS - Departamentos",
+    "CASAS Y TERRENOS - Terrenos",
+    "CASAS Y TERRENOS - Locales",
+    "CASAS Y TERRENOS - Agricolas",
+    "Construcciones",
+    "Muebles",
+    "Maquinas y equipos",
+    "VEHICULOS - Automoviles",
+    "VEHICULOS - Camionetas",
+    "Pensiones",
+    "Valores",
+    "Traspasos",
+    "Empleos",
+    "Oficios",
+    "Domesticos",
+    "Negocios",
+    "Electrodomesticos",
+    "Servicios"
+],
+    "2":[
+    "Varios",
+    "Alquiler",
+    "Casas y Terrenos",
+    "Construcciones",
+    "Muebles",
+    "Maquinas y equipos",
+    "Vehiculos",
+    "Pensiones",
+    "Valores",
+    "Traspasos",
+    "Empleos",
+    "Oficios",
+    "Domesticos",
+    "Negocios",
+    "Electrodomesticos",
+    "Servicios"
+]
+  };
   TextEditingController _date=TextEditingController();
   
   String? _selectedTipoCliente="1";
