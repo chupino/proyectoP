@@ -91,6 +91,9 @@ class _HomePageState extends State<Home> with TickerProviderStateMixin{
   
   String? _selectedComprobante="1";
 
+  var tipoAnuncio="Economicos";
+  var tipoCliente="Persona Natural";
+  var categoriaForm="";
   final tipoAnuncioForm=TextEditingController();
   final seccionAnuncioForm=TextEditingController();
   final ndiasForm=TextEditingController();
@@ -564,14 +567,52 @@ Container test(){
         key: _formKey,
         child: Stepper(
           controlsBuilder: (context,ControlsDetails controls){
-            return Container(
-              margin: EdgeInsets.only(top: 50),
-              child: Row(children: [
-                Expanded(child: ElevatedButton(child: Text("Siguiente"),onPressed: (){controls.onStepContinue!();},style: ButtonStyle(backgroundColor: materialColorBoton)),),
-                const SizedBox(width: 12,),
-                Expanded(child: ElevatedButton(child: Text("Atrás"),onPressed: (){controls.onStepCancel!();},style: ButtonStyle(backgroundColor: materialColorBoton2)),),
-              ]),
-            );
+            if(_currentStep==0){
+              return Container(
+                margin: EdgeInsets.only(top: 50),
+                child: Row(
+                  children: [
+                    Expanded(child: ElevatedButton(child: Text("Siguiente"),onPressed: (){controls.onStepContinue!();},style: ButtonStyle(backgroundColor: materialColorBoton)),),
+                  ],
+                ),
+              );
+            }
+            if(_currentStep==1){
+              return Container(
+                            margin: EdgeInsets.only(top: 50),
+                            child: Row(children: [
+                              Expanded(child: ElevatedButton(child: Text("Siguiente"),onPressed: (){controls.onStepContinue!();},style: ButtonStyle(backgroundColor: materialColorBoton)),),
+                              const SizedBox(width: 12,),
+                              Expanded(child: ElevatedButton(child: Text("Atrás"),onPressed: (){controls.onStepCancel!();},style: ButtonStyle(backgroundColor: materialColorBoton2)),),
+                            ]),
+                          );
+            }
+            if(_currentStep==2){
+              return Container(
+                margin: EdgeInsets.only(top: 50),
+                child: Row(
+                  children: [
+                    Expanded(child: ElevatedButton(child: Text("Terminar"),onPressed: (){controls.onStepContinue!();},style: ButtonStyle(backgroundColor: materialColorBoton)),),
+                    const SizedBox(width: 12,),
+                    Expanded(child: ElevatedButton(child: Text("Atrás"),onPressed: (){controls.onStepCancel!();},style: ButtonStyle(backgroundColor: materialColorBoton2)),),
+                  ],
+                ),
+              );
+            }
+            if(_currentStep==3){
+              return Container(
+                            margin: EdgeInsets.only(top: 50),
+                            child: Row(children: [
+                              Expanded(child: ElevatedButton(child: Text("Enviar"),onPressed: (){controls.onStepContinue!();},style: ButtonStyle(backgroundColor: materialColorBoton)),),
+                              const SizedBox(width: 12,),
+                              Expanded(child: ElevatedButton(child: Text("Atrás"),onPressed: (){controls.onStepCancel!();},style: ButtonStyle(backgroundColor: materialColorBoton2)),),
+                            ]),
+                          );
+            }
+            else{
+              return Container();
+            }
+            
           },
           physics: ScrollPhysics(),
           currentStep: _currentStep,
@@ -579,6 +620,7 @@ Container test(){
             print(step);
           },
           onStepContinue: () {
+
             if(_currentStep==0){
               setState(() {
                   _currentStep += 1;
@@ -614,11 +656,12 @@ Container test(){
               
             }
             else if(_currentStep==2){
+
               _formKey.currentState!.validate();
               bool isDetailValid=isDetailComplete();
               if(isDetailValid){
                 setState(() {
-                  if (_currentStep < 2) {
+                  if (_currentStep <= 2) {
                     _currentStep += 1;
                     } else {
                             // Envía el formulario
@@ -680,9 +723,11 @@ Container test(){
                       child: Text("Edicto")
                       ),
                   ],
+
                   onChanged: (value) {
                     setState(() {
                       _selectedOption=value!;
+
                     });
                   },
                 )
@@ -699,7 +744,7 @@ Container test(){
                 height: 20
               ),
               DropdownButtonFormField<String>(
-
+                
                 icon: Icon(Icons.attach_money),
                   decoration: const InputDecoration(
                     border:OutlineInputBorder(borderSide: BorderSide(width: 1),
@@ -719,6 +764,7 @@ Container test(){
                   ],
                   onChanged: (value) {
                     setState(() {
+                      value=="1"?tipoAnuncio="Economicos":tipoAnuncio="Super-Economicos";
                       _selectedOptionClasificados=value!;
                     });
                   },
@@ -1194,6 +1240,8 @@ Container test(){
                   onChanged: (value) {
                     setState(() {
                       _selectedTipoCliente=value;
+                      tipoCliente=value!;
+                      value=="1"?tipoCliente="Persona Natural":tipoCliente="Persona Juridica";
                     });
                   },
                   decoration: InputDecoration(
@@ -1210,7 +1258,158 @@ Container test(){
                   
             ],
           ),
-        )
+        ),
+        Step(title: Text("Confirmar"), content: Column(children: [
+          Table(
+            border: TableBorder.all(borderRadius: BorderRadius.circular(16)),
+            children: [
+              TableRow(
+                children: [
+                  TableCell(child: Container(
+                    padding: EdgeInsets.all(8),
+                    child: Text("CONCEPTO"),
+                  )),
+                  TableCell(child: Container(
+                    padding: EdgeInsets.all(8),
+                    child: Text("DETALLE"),
+                  )),
+                ]
+              ),
+              TableRow(
+                children: [
+                  TableCell(child: Container(
+                    padding: EdgeInsets.all(8),
+                    child: Text("Tipo Cliente"),
+                  )),
+                  TableCell(child: Container(
+                    padding: EdgeInsets.all(8),
+                    child: Text(tipoCliente),
+                  )),
+                ]
+              ),
+              TableRow(
+                children: [
+                  TableCell(child: Container(
+                    padding: EdgeInsets.all(8),
+                    child: Text("Tipo Anuncio"),
+                  )),
+                  TableCell(child: Container(
+                    padding: EdgeInsets.all(8),
+                    child: Text(tipoAnuncio),
+                  )),
+                ]
+              ),
+              TableRow(
+                children: [
+                  TableCell(child: Container(
+                    padding: EdgeInsets.all(8),
+                    child: Text("Categoria"),
+                  )),
+                  TableCell(child: Container(
+                    padding: EdgeInsets.all(8),
+                    child: Text("x"),
+                  )),
+                ]
+              ),
+              TableRow(
+                children: [
+                  TableCell(child: Container(
+                    padding: EdgeInsets.all(8),
+                    child: Text("Detalles Anuncio"),
+                  )),
+                  TableCell(child: Container(
+                    padding: EdgeInsets.all(8),
+                    child: Text(contenidoAnuncioForm.text??contenidoEdictoForm.text),
+                  )),
+                ]
+              ),
+              TableRow(
+                children: [
+                  TableCell(child: Container(
+                    padding: EdgeInsets.all(8),
+                    child: Text("Cantidad de Dias"),
+                  )),
+                  TableCell(child: Container(
+                    padding: EdgeInsets.all(8),
+                    child: Text(ndiasForm.text),
+                  )),
+                ]
+              ),
+              TableRow(
+                children: [
+                  TableCell(child: Container(
+                    padding: EdgeInsets.all(8),
+                    child: Text("Precio total"),
+                  )),
+                  TableCell(child: Container(
+                    padding: EdgeInsets.all(8),
+                    child: Text("S/."),
+                  )),
+                ]
+              ),
+              TableRow(
+                children: [
+                  TableCell(child: Container(
+                    padding: EdgeInsets.all(8),
+                    child: Text("Cantidad de Palabras"),
+                  )),
+                  TableCell(child: Container(
+                    padding: EdgeInsets.all(8),
+                    child: Text("n"),
+                  )),
+                ]
+              ),
+              TableRow(
+                children: [
+                  TableCell(child: Container(
+                    padding: EdgeInsets.all(8),
+                    child: Text("Nombre del Cliente"),
+                  )),
+                  TableCell(child: Container(
+                    padding: EdgeInsets.all(8),
+                    child: Text(nombreForm.text),
+                  )),
+                ]
+              ),
+              TableRow(
+                children: [
+                  TableCell(child: Container(
+                    padding: EdgeInsets.all(8),
+                    child: Text("Apellido del Cliente"),
+                  )),
+                  TableCell(child: Container(
+                    padding: EdgeInsets.all(8),
+                    child: Text(apellidoForm.text),
+                  )),
+                ]
+              ),
+              TableRow(
+                children: [
+                  TableCell(child: Container(
+                    padding: EdgeInsets.all(8),
+                    child: Text("Telefono del Cliente"),
+                  )),
+                  TableCell(child: Container(
+                    padding: EdgeInsets.all(8),
+                    child: Text(phoneForm.text),
+                  )),
+                ]
+              ),
+              TableRow(
+                children: [
+                  TableCell(child: Container(
+                    padding: EdgeInsets.all(8),
+                    child: Text("DNI del Cliente"),
+                  )),
+                  TableCell(child: Container(
+                    padding: EdgeInsets.all(8),
+                    child: Text(dniForm.text),
+                  )),
+                ]
+              ),
+            ],
+          )
+        ],))
         ];
   }
 
