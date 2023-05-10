@@ -610,7 +610,13 @@ Container test(){
         print("no valido");
       }
       else{
-        print("--------------------------------MIRA MI HUEVO");
+        String contenidoNeto=contenidoAnuncioForm.text;
+        var excepciones=[];
+        var diccionario = [
+            //Las abreviaturas las contaras primero
+            'cel.', 'CO2', 'co2', 'c-', 'C-', 'c/', 'C/', 'T-', 'T/', 'T.', 't-', 't/', 't.', 'tel.', 'telf.', 'cm3', 'cm2', 'm3', 'mt3', 'km2', 'mt2', 'Sr.', 'Sres.', 'Sra.', 'sra.', 's/', 's/.', 'S/', 'S/.', '.pe', '.com', 'y/o', 'E.I.R.L', 'E.I.R.L.', 'S.R.L.', 'S.R.L.', 'S.A.', 'S.A', 'S.A.C', 'S.A.C', 'a.C.', 'a.m.', 'Admón.', 'Admvo.', 'Almte.', 'Art.', 'av.', 'Cía.', 'c/u', 'D. o Da.', 'D.ª', 'D. E. P.', 'D. F.', 'D.G.', 'd. J. C.', 'Dr. o Dra.', 'E. U.', 'ed.', 'ed. rev.', 'ej.', 'etc.', 'exm. o Exmo.', 'Gral. o Gral.', 'Ing.', 'Jr.', 'Lic.', 'Ltda.', 'Máx.', 'Mín.', 'N. de E.', 'N. de la R.', 'N.º', 'pág.', 'Pd.', 'Prof.', 'P. S.', 'p. ej.', 'p. m.', 'RAE', 'S.A.', 'S.R.L.', 'S.L.', 'Sr.', 'Sra.', 'Srita.', 'Stgo.', 'Ud.', 'Uds.', 'Vd.', 'Vds.', 'm2', 'km2', 'cm2', 'mm2', 'm2.', 'km2.', 'cm2.', 'mm2.', 'm.', 'km.', 'cm.', 'mm.', 'kg.', 'mg.', 'L.', 'mL.', 'Hz.', 'N.', 'Pa.', 'J.', 'W.', 'A.', 'V.', 'Ω.', 'min.', 'h.', 'd.'
+        ];
+
       }
     }
     return Form(
