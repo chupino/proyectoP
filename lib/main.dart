@@ -35,6 +35,7 @@ import 'package:shimmer/shimmer.dart';
 
 
 void main() async {
+
   await initializeDateFormatting();
   runApp(MyApp());
 

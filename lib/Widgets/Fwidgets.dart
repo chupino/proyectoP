@@ -63,51 +63,69 @@ class _navBarState extends State<navBar> {
 
   @override
   Widget build(BuildContext context) {
-    return BottomNavigationBar(
-      backgroundColor: Theme.of(context).primaryColor,
-      unselectedItemColor: Theme.of(context).primaryColorLight,
-      
-      type: BottomNavigationBarType.fixed,
-      iconSize: 30,
-      items: <BottomNavigationBarItem>[
-        BottomNavigationBarItem(
-          icon: Icon(
-            Icons.home,
-            color: Theme.of(context).primaryColorLight,
-          ),
-          label: "INICIO",
-
-          activeIcon: IconWithBackground(icon: Icons.home, backgroundColor: Colors.red)
-        ),
-        BottomNavigationBarItem(
-          icon: Icon(
-            Icons.explore,
-            color: Theme.of(context).primaryColorLight,
-          ),
-          label: "CATEGORIAS",
-          activeIcon: IconWithBackground(icon: Icons.explore, backgroundColor: Colors.red)
-        ),
-        BottomNavigationBarItem(
-          icon: Icon(
-            Icons.library_books,
-            color: Theme.of(context).primaryColorLight,
-          ),
-          label: "PERIODICOS",
-          activeIcon: IconWithBackground(icon: Icons.library_books, backgroundColor: Colors.red)
-        ),
-        BottomNavigationBarItem(
-          icon: Icon(
-            Icons.settings,
-            color: Theme.of(context).primaryColorLight,
-          ),
-          label: "AJUSTES",
-          activeIcon: IconWithBackground(icon: Icons.settings, backgroundColor: Colors.red)
+    return Theme(
+      data: Theme.of(context).copyWith(
+        colorScheme: ColorScheme.fromSwatch(
+          primarySwatch: MaterialColor(0xFFffffff, {
+            50: Color(0xFFffffff),
+            100: Color(0xFFffffff),
+            200: Color(0xFFffffff),
+            300: Color(0xFFffffff),
+            400: Color(0xFFffffff),
+            500: Color(0xFFffffff),
+            600: Color(0xFFffffff),
+            700: Color(0xFFffffff),
+            800: Color(0xFFffffff),
+            900: Color(0xFFffffff),
+          }),
         )
-      ],
-      currentIndex: _selectedIndex,
-      onTap: _setIndex,
-      unselectedLabelStyle: TextStyle(color: Colors.white),
-      selectedLabelStyle: TextStyle(fontSize: 15),
+      ),
+      child: BottomNavigationBar(
+        backgroundColor: Theme.of(context).primaryColor,
+        unselectedItemColor: Theme.of(context).primaryColorLight,
+        
+        type: BottomNavigationBarType.fixed,
+        iconSize: 30,
+        items: <BottomNavigationBarItem>[
+          BottomNavigationBarItem(
+            icon: Icon(
+              Icons.home,
+              color: Theme.of(context).primaryColorLight,
+            ),
+            label: "INICIO",
+    
+            activeIcon: IconWithBackground(icon: Icons.home, backgroundColor: Colors.red)
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(
+              Icons.explore,
+              color: Theme.of(context).primaryColorLight,
+            ),
+            label: "CATEGORIAS",
+            activeIcon: IconWithBackground(icon: Icons.explore, backgroundColor: Colors.red)
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(
+              Icons.library_books,
+              color: Theme.of(context).primaryColorLight,
+            ),
+            label: "PERIODICOS",
+            activeIcon: IconWithBackground(icon: Icons.library_books, backgroundColor: Colors.red)
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(
+              Icons.settings,
+              color: Theme.of(context).primaryColorLight,
+            ),
+            label: "AJUSTES",
+            activeIcon: IconWithBackground(icon: Icons.settings, backgroundColor: Colors.red)
+          )
+        ],
+        currentIndex: _selectedIndex,
+        onTap: _setIndex,
+        unselectedLabelStyle: TextStyle(color: Colors.white),
+        selectedLabelStyle: TextStyle(fontSize: 15),
+      ),
     );
   }
 }

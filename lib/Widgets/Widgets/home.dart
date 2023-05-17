@@ -3,7 +3,6 @@
 import 'dart:io';
 import 'dart:typed_data';
 import 'dart:ui';
-
 import 'package:cached_memory_image/cached_memory_image.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
@@ -13,6 +12,7 @@ import 'package:intl/intl.dart';
 import 'package:onesignal_flutter/onesignal_flutter.dart';
 import 'package:pdf_render/pdf_render_widgets.dart';
 import 'package:periodico/Widgets/Widgets/pdfViewer.dart';
+import 'package:periodico/Widgets/Widgets/resumen.dart';
 import 'package:periodico/services/dataHandler.dart';
 import 'package:periodico/services/pdfViewers.dart';
 import 'package:provider/provider.dart';
@@ -49,17 +49,21 @@ class _HomePageState extends State<Home> with TickerProviderStateMixin{
   int _selectedIndex = 0;
   late File documentPDF;
   bool inicioFormulario=true;
-  String _selectedOption="1";
+  String _selectedOption="Clasificados";
   
+  double precioAnuncioFinal=0.0;
+  int cantidaDePalabras=0;
+
   final TextEditingController _textController = TextEditingController();
   final tags=UserServices().tags;
   bool imagenValida=false;
   
   String _selectedOptionClasificados="1";
+  String? _tipoAnuncio="Super-Economicos";
   String? _selectedProvince='Arequipa';
   String? _selectedCategory="Varios";
   String? _selectedDistrict="Cercado";
-  var _selectedOptionEdictos="1";
+  var _selectedOptionEdictos="Edicto Matrimonial";
     List<String> _provinces = [
     'Arequipa',
     'Camaná',
@@ -69,6 +73,12 @@ class _HomePageState extends State<Home> with TickerProviderStateMixin{
     'Islay',
     'La Unión',
     'OTROS',
+  ];
+
+  Map<String,dynamic> boletaAnuncio={};
+  List<String> _secciones=[
+    "Economicos",
+    "Super-Economicos"
   ];
   Map<String, List<String>> _districts = {
     'Arequipa': ["Cercado", "Alto Selva Alegre", "Cayma", "Cerro Colorado", "Characato", "Chiguata", "Jacobo Hunter", "La Joya", "Miraflorres", "Mollebaya", "Paucarpata", "Poso Alto", "Pozo Almonte", "Sabandía", "Sachaca", "San Juan de Siguas", "San Juan de Tarucani", "Santa Isabel de Siguas", "Santa Rita de Siguas", "Socabaya", "Tiabaya", "Uchumayo", "Vitor", "Yanahuara", "Yarabamba", "Yura"],
@@ -127,10 +137,13 @@ class _HomePageState extends State<Home> with TickerProviderStateMixin{
   };
   
   TextEditingController _date=TextEditingController();
+
+  TextEditingController dateInicio=TextEditingController();
+  TextEditingController dateFinal=TextEditingController();
   
   String? _selectedTipoCliente="1";
   
-  String? _selectedComprobante="1";
+  String? _selectedComprobante="No Corresponde";
 
   var tipoAnuncio="Economicos";
   var tipoCliente="Persona Natural";
@@ -149,6 +162,10 @@ class _HomePageState extends State<Home> with TickerProviderStateMixin{
   final rucForm=TextEditingController();
   final empresaPhoneForm=TextEditingController();
   final contenidoEdictoForm=TextEditingController(text: " Hago saber que:<br>Que Don: _________________, de __ años de edad, estado civil _______, profesión __________, natural de __________, de nacionalidad _________, vecino del distrito de ___________, con domicilio en __________, Provincia de ___________ y Departamento de _________, con DNI Nº _________, quiere contraer matrimonio civil con Doña: _________________, de __ años de edad, estado civil _________, de profesión _____________, de nacionalidad _____________, vecina del distrito de _____________, con domicilio en _____________, Provincia de _____________ y Departamento de _____________, con DNI Nº _____________. Las personas que conozcan que los pretendientes tiene algún impedimento, deben de comunicar a esta oficina. <br>[ - Municipalidad de ??? -] - [ Direccion de la municipalidad ] <br>[ - Mes - ] - 2023<br> [ Nombre del Alcade ]<br> ALCALDE ");
+  DateTime? firstDate;
+  String? diasArticulos="0";
+  
+  bool nextDate=false;
 
 
 
@@ -462,15 +479,15 @@ Container test(){
                     value: _selectedComprobante,
                     items: const [
                       DropdownMenuItem(
-                        value: "1",
+                        value: "No Corresponde",
                         child: Text("No Corresponde")
                         ),
                       DropdownMenuItem(
-                        value: "2",
+                        value: "Boleta",
                         child: Text("Boleta")
                         ),
                       DropdownMenuItem(
-                        value: "3",
+                        value: "Factura",
                         child: Text("Factura")
                         ),
                     ],
@@ -482,8 +499,10 @@ Container test(){
                   )
       
     ];
+
     List<Widget> datosJuridica=[
       TextFormField(
+                    keyboardType: TextInputType.text,
                     controller: razonSocialForm,
                     decoration: InputDecoration(
                       floatingLabelBehavior: FloatingLabelBehavior.always,
@@ -493,7 +512,7 @@ Container test(){
                     ),
                     validator: (value) {
                       if (value!.isEmpty) {
-                        return 'Ingresa una razón social';
+                        return 'Campo obligatorio';
                       }
                       return null;
                     },
@@ -505,6 +524,7 @@ Container test(){
                   height: 50,
                 ),
       TextFormField(
+        keyboardType: TextInputType.number,
                     controller: rucForm,
                     decoration: InputDecoration(
                       floatingLabelBehavior: FloatingLabelBehavior.always,
@@ -512,9 +532,17 @@ Container test(){
                       border: OutlineInputBorder(borderRadius: BorderRadius.circular(16)),
                       suffixIcon: Icon(Icons.business)
                     ),
+                    onChanged: (value){
+                      if(value.length>11){
+                        rucForm.text=value.substring(0,11);
+                      }
+                    },
                     validator: (value) {
                       if (value!.isEmpty) {
-                        return 'Ingresa un RUC';
+                        return 'Campo Obligatorio';
+                      }
+                      if (value.length != 11) {
+                        return 'El número debe tener exactamente 11 dígitos';
                       }
                       return null;
                     },
@@ -525,7 +553,8 @@ Container test(){
       SizedBox(
                   height: 50,
                 ),
-      TextFormField(
+      TextFormField( 
+                    keyboardType: TextInputType.number,
                     controller: empresaPhoneForm,
                     decoration: InputDecoration(
                       floatingLabelBehavior: FloatingLabelBehavior.always,
@@ -533,9 +562,15 @@ Container test(){
                       border: OutlineInputBorder(borderRadius: BorderRadius.circular(16)),
                       suffixIcon: Icon(Icons.phone)
                     ),
+                    onChanged: (value){
+                      empresaPhoneForm.text=value.substring(0,9);
+                    },
                     validator: (value) {
                       if (value!.isEmpty) {
-                        return 'Ingresa un Telefono Valido';
+                        return 'Campo Obligatorio';
+                      }
+                      if(value.length!=9){
+                        return "El número debe tener exactamente 9 dígitos";
                       }
                       return null;
                     },
@@ -557,15 +592,15 @@ Container test(){
                     value: _selectedComprobante,
                     items: const [
                       DropdownMenuItem(
-                        value: "1",
+                        value: "No Corresponde",
                         child: Text("No Corresponde")
                         ),
                       DropdownMenuItem(
-                        value: "2",
+                        value: "Boleta",
                         child: Text("Boleta")
                         ),
                       DropdownMenuItem(
-                        value: "3",
+                        value: "Factura",
                         child: Text("Factura")
                         ),
                     ],
@@ -580,14 +615,23 @@ Container test(){
       if(_currentStep==0){
         return true;
       }else if(_currentStep==1){
-        if(ndiasForm.text.isEmpty || _date.text.isEmpty || contenidoAnuncioForm.text.isEmpty){
+        if(_selectedOption=="Clasificados"){
+          if(ndiasForm.text.isEmpty || dateFinal.text.isEmpty || dateInicio.text.isEmpty || contenidoAnuncioForm.text.isEmpty ){
           return false;
         }else{
           return true;
         }
+        }else{
+          if(ndiasForm.text.isEmpty || dateFinal.text.isEmpty || dateInicio.text.isEmpty || contenidoEdictoForm.text.isEmpty ){
+          return false;
+        }else{
+          return true;
+        }
+        }
+        
       }else if(_currentStep==2){
         if(_selectedTipoCliente=="1"){
-          if(nombreForm.text.isEmpty || apellidoForm.text.isEmpty || dniForm.text.isEmpty || emailForm.text.isEmpty || phoneForm.text.isEmpty){
+          if(nombreForm.text.isEmpty || apellidoForm.text.isEmpty || dniForm.text.isEmpty || emailForm.text.isEmpty || phoneForm.text.isEmpty || !RegExp(r'^[\w-]+(\.[\w-]+)*@([\w-]+\.)+[a-zA-Z]{2,7}$').hasMatch(emailForm.text) || dniForm.text.length!=8 || phoneForm.text.length!=9){
 
               return false;
 
@@ -595,7 +639,7 @@ Container test(){
             return true;
           }
         }else if(_selectedTipoCliente=="2"){
-          if(nombreForm.text.isEmpty || apellidoForm.text.isEmpty || dniForm.text.isEmpty || emailForm.text.isEmpty || phoneForm.text.isEmpty || razonSocialForm.text.isEmpty || rucForm.text.isEmpty ||empresaPhoneForm.text.isEmpty){
+          if(nombreForm.text.isEmpty || apellidoForm.text.isEmpty || dniForm.text.isEmpty || emailForm.text.isEmpty || phoneForm.text.isEmpty || !RegExp(r'^[\w-]+(\.[\w-]+)*@([\w-]+\.)+[a-zA-Z]{2,7}$').hasMatch(emailForm.text) || razonSocialForm.text.isEmpty || rucForm.text.isEmpty ||empresaPhoneForm.text.isEmpty || dniForm.text.length!=8 || phoneForm.text.length!=9 || rucForm.text.length!=11 || empresaPhoneForm.text.length!=9){
             return false;
           }else{
             return true;
@@ -604,43 +648,84 @@ Container test(){
       }
       return false;
     }
-    void contarPalabras(){
+          Map<String,dynamic> contarPalabras(){
       bool validation=_formKey.currentState!.validate();
-      if(ndiasForm.text.isEmpty || _date.text.isEmpty || contenidoAnuncioForm.text.isEmpty){
+      if(ndiasForm.text.isEmpty || dateInicio.text.isEmpty || dateFinal.text.isEmpty || contenidoAnuncioForm.text.isEmpty){
         print("no valido");
+        throw "Error mano";
       }
       else{
+        
+        
         String contenidoNeto=contenidoAnuncioForm.text;
         var excepciones=[];
         var diccionario = [
             'cel.', 'CO2', 'co2', 'c-', 'C-', 'c/', 'C/', 'T-', 'T/', 'T.', 't-', 't/', 't.', 'tel.', 'telf.', 'cm3', 'cm2', 'm3', 'mt3', 'km2', 'mt2', 'Sr.', 'Sres.', 'Sra.', 'sra.', 's/', 's/.', 'S/', 'S/.', '.pe', '.com', 'y/o', 'E.I.R.L', 'E.I.R.L.', 'S.R.L.', 'S.R.L.', 'S.A.', 'S.A', 'S.A.C', 'S.A.C', 'a.C.', 'a.m.', 'Admón.', 'Admvo.', 'Almte.', 'Art.', 'av.', 'Cía.', 'c/u', 'D. o Da.', 'D.ª', 'D. E. P.', 'D. F.', 'D.G.', 'd. J. C.', 'Dr. o Dra.', 'E. U.', 'ed.', 'ed. rev.', 'ej.', 'etc.', 'exm. o Exmo.', 'Gral. o Gral.', 'Ing.', 'Jr.', 'Lic.', 'Ltda.', 'Máx.', 'Mín.', 'N. de E.', 'N. de la R.', 'N.º', 'pág.', 'Pd.', 'Prof.', 'P. S.', 'p. ej.', 'p. m.', 'RAE', 'S.A.', 'S.R.L.', 'S.L.', 'Sr.', 'Sra.', 'Srita.', 'Stgo.', 'Ud.', 'Uds.', 'Vd.', 'Vds.', 'm2', 'km2', 'cm2', 'mm2', 'm2.', 'km2.', 'cm2.', 'mm2.', 'm.', 'km.', 'cm.', 'mm.', 'kg.', 'mg.', 'L.', 'mL.', 'Hz.', 'N.', 'Pa.', 'J.', 'W.', 'A.', 'V.', 'Ω.', 'min.', 'h.', 'd.'
         ];
-        for(var i=0; i<diccionario.length;i++){
+        List<String> resultados = [];
+        for(var i=0; i<diccionario.length; i++){
           var index=contenidoNeto.indexOf(diccionario[i]);
+          print(index);
           if(index!=-1){
             excepciones.add(diccionario[i]);
           }
-          contenidoNeto=contenidoNeto.replaceAll(diccionario[i], "");
         }
-        var verExcepciones = excepciones;
-        var palabrasEspeciales = excepciones.length;
+        RegExp expresionRegular = RegExp(r'[+-]?\d+(\.\d+)?');
+        Iterable<Match> numerosFlotantes = expresionRegular.allMatches(contenidoNeto);
+        for (Match match in numerosFlotantes) {
+          resultados.add(match.group(0)!);
+        }
 
+        String textoTrim=contenidoNeto.trim();
 
-        var numerosContados;
-        var expresionRegular = RegExp("/[+-]?\d+(\.\d+)?/g");
-        var numerosFlotantes = expresionRegular.allMatches(contenidoNeto).toList();
-        if (numerosFlotantes != null) {
-            numerosContados = numerosFlotantes.length;
-        } else {
-            numerosContados = 0;
+        List<String> palabras = textoTrim.split(' ');
+        int cantidadPalabras = palabras.length;
+
+        
+
+        double precioxPalabra=0.0;
+        double precioAnuncio=0.0;
+        double precioMin=0.0;
+        int diasAnuncio=int.parse(ndiasForm.text);
+
+        if(tipoAnuncio=="Economicos"){
+          precioxPalabra=0.7;
+          if(cantidadPalabras<10){
+            precioAnuncio=double.parse((10*precioxPalabra*diasAnuncio).toStringAsFixed(2));
+            precioMin=precioxPalabra*10;
+          }else{
+            precioAnuncio=double.parse((cantidadPalabras*precioxPalabra*diasAnuncio).toStringAsFixed(2));
+            precioMin=precioxPalabra*10;
+          }
+        }else{
+          precioxPalabra=1;
+          if(cantidadPalabras<10){
+            precioAnuncio=double.parse((10*precioxPalabra*diasAnuncio).toStringAsFixed(2));
+            precioMin=precioxPalabra*10;
+
+          }else{
+            precioAnuncio=double.parse((cantidadPalabras*precioxPalabra*diasAnuncio).toStringAsFixed(2));
+            precioMin=precioxPalabra*10;
+          }
         }
-        for (var i = 0; i < numerosContados; i++) {
-            print("una");
-            var index = contenidoNeto.indexOf(numerosFlotantes[i] as Pattern);
-            contenidoNeto = contenidoNeto.replaceAll(numerosFlotantes[i] as Pattern, "");
-        }
-        var verNumero = numerosFlotantes;
-        print("AAAAH ME VIOLAAAAAN $verNumero");
+        Map<String,dynamic> datosEnviar={
+          "palabras":cantidadPalabras,
+          "precio":precioAnuncio,
+          "costoPalabra":precioxPalabra,
+          "minPrecio":precioMin,
+          "verExcepciones":excepciones,
+          "numerosFontados":resultados,
+          "verTexto":textoTrim
+        };
+        print("Tipo Anuncio: $tipoAnuncio");
+        print("Costo anuncio: $precioAnuncio");
+        print("Cantidad Palabras: $cantidadPalabras");
+        print("Numeros: $resultados");
+        print("Caracteres filtrados: $excepciones");
+
+        precioAnuncioFinal=precioAnuncio;
+        cantidaDePalabras=cantidadPalabras;
+        return datosEnviar;
       }
 
     }
@@ -649,6 +734,7 @@ Container test(){
         child: Stepper(
           controlsBuilder: (context,ControlsDetails controls){
             if(_currentStep==0){
+
               return Container(
                 margin: EdgeInsets.only(top: 50),
                 child: Row(
@@ -659,40 +745,58 @@ Container test(){
               );
             }
             if(_currentStep==1){
-              return Container(
+              if(_selectedOption=="Clasificados"){
+                return Container(
                             margin: EdgeInsets.only(top: 50),
                             child: Row(children: [
                               Expanded(child: ElevatedButton(child: Text("Siguiente"),onPressed: (){controls.onStepContinue!();},style: ButtonStyle(backgroundColor: materialColorBoton)),),
                               const SizedBox(width: 12,),
                               Expanded(child: ElevatedButton(child: Text("Atrás"),onPressed: (){controls.onStepCancel!();},style: ButtonStyle(backgroundColor: materialColorBoton2)),),
-                              const SizedBox(width: 12,),
-                              Expanded(child: ElevatedButton(child: Text("Calcular Precio"),onPressed: (){contarPalabras();},style: ButtonStyle(backgroundColor: materialColorBoton2)),),
                             ]),
 
                           );
+              }else{
+                return Container(
+                            margin: EdgeInsets.only(top: 50),
+                            child: Row(children: [
+                              Expanded(child: ElevatedButton(child: Text("Siguiente"),onPressed: (){controls.onStepContinue!();},style: ButtonStyle(backgroundColor: materialColorBoton)),),
+                              const SizedBox(width: 12,),
+                              Expanded(child: ElevatedButton(child: Text("Atrás"),onPressed: (){controls.onStepCancel!();},style: ButtonStyle(backgroundColor: materialColorBoton2)),),
+                            ]),
+
+                          );
+              }
+              
             }
             if(_currentStep==2){
               return Container(
                 margin: EdgeInsets.only(top: 50),
                 child: Row(
                   children: [
-                    Expanded(child: ElevatedButton(child: Text("Terminar"),onPressed: (){controls.onStepContinue!();},style: ButtonStyle(backgroundColor: materialColorBoton)),),
+                    Expanded(child: ElevatedButton(child: Text("Terminar"),onPressed: (){
+                      controls.onStepContinue!();
+                    },style: ButtonStyle(backgroundColor: materialColorBoton)),),
                     const SizedBox(width: 12,),
                     Expanded(child: ElevatedButton(child: Text("Atrás"),onPressed: (){controls.onStepCancel!();},style: ButtonStyle(backgroundColor: materialColorBoton2)),),
                   ],
                 ),
               );
             }
+            /*
             if(_currentStep==3){
               return Container(
                             margin: EdgeInsets.only(top: 50),
                             child: Row(children: [
-                              Expanded(child: ElevatedButton(child: Text("Enviar"),onPressed: (){controls.onStepContinue!();},style: ButtonStyle(backgroundColor: materialColorBoton)),),
+                              Expanded(child: ElevatedButton(child: Text("Enviar"),onPressed: (){
+                                Navigator.push(context,MaterialPageRoute(builder: (context) =>
+                                  resumenForm(resumen: boletaAnuncio)
+                                ));
+                              },style: ButtonStyle(backgroundColor: materialColorBoton)),),
                               const SizedBox(width: 12,),
                               Expanded(child: ElevatedButton(child: Text("Atrás"),onPressed: (){controls.onStepCancel!();},style: ButtonStyle(backgroundColor: materialColorBoton2)),),
                             ]),
                           );
-            }
+            }*/
             else{
               return Container();
             }
@@ -708,15 +812,30 @@ Container test(){
             if(_currentStep==0){
               setState(() {
                   _currentStep += 1;
+                  boletaAnuncio["Tipo Anuncio"]=_selectedOption.toString();
                 });
             }
             else if(_currentStep==1){
-              if(_selectedOption=="1"){
+              
+              if(_selectedOption=="Clasificados"){
+                contarPalabras();
+                boletaAnuncio["Sección"]=tipoAnuncio.toString();
+                boletaAnuncio["Sub Seccion"]=_selectedCategory.toString();
+                boletaAnuncio["Numero de Dias"]=ndiasForm.text;
+                boletaAnuncio["Fecha Inicio"]=dateInicio.text;
+                boletaAnuncio["Fecha Fin"]=dateFinal.text;
+                boletaAnuncio["Contenido"]=contenidoAnuncioForm.text;
+                boletaAnuncio["Precio Total"]=precioAnuncioFinal;
+                boletaAnuncio["Cantidad de Palabras"]=cantidaDePalabras;
+                
+                
+                
                 _formKey.currentState!.validate();
                 bool isDetailValid=isDetailComplete();
                 if(isDetailValid){
                   setState(() {
                     if (_currentStep < 2) {
+                      
                       _currentStep += 1;
                     } else {
                             // Envía el formulario
@@ -724,12 +843,23 @@ Container test(){
                 });
               }
               _formKey.currentState!.save();
-              }else if(_selectedOption=="2"){
+              }else if(_selectedOption=="Edicto"){
+                precioAnuncioFinal=20.5*int.parse(ndiasForm.text);
+                boletaAnuncio["Tipo Edicto"]=_selectedOptionEdictos.toString();
+                boletaAnuncio["Fecha Inicio"]=dateInicio.text;
+                boletaAnuncio["Fecha Fin"]=dateFinal.text;
+                boletaAnuncio["Numero de Dias"]=ndiasForm.text;
+                boletaAnuncio["Provincia"]=_selectedProvince.toString();
+                boletaAnuncio["Distrito"]=_selectedDistrict.toString();
+                boletaAnuncio["Contenido"]=contenidoEdictoForm.text;
+                boletaAnuncio["Precio Total"]=precioAnuncioFinal;
                 _formKey.currentState!.validate();
                 bool isDetailValid=isDetailComplete();
+                print(isDetailValid);
                 if(isDetailValid){
                   setState(() {
                     if (_currentStep < 2) {
+                      
                       _currentStep += 1;
                     } else {
                             // Envía el formulario
@@ -740,18 +870,54 @@ Container test(){
               
             }
             else if(_currentStep==2){
-
-              _formKey.currentState!.validate();
-              bool isDetailValid=isDetailComplete();
-              if(isDetailValid){
-                setState(() {
-                  if (_currentStep <= 2) {
-                    _currentStep += 1;
-                    } else {
-                            // Envía el formulario
-                    }
-                });
+              if(tipoCliente=="Persona Natural"){
+                boletaAnuncio["Nombre Cliente"]=nombreForm.text;
+                boletaAnuncio["Apellido Cliente"]=apellidoForm.text;
+                boletaAnuncio["DNI Cliente"]=dniForm.text;
+                boletaAnuncio["Correo"]=emailForm.text;
+                boletaAnuncio["Celular Cliente"]=phoneForm.text;
+                boletaAnuncio["Tipo Cliente"]=tipoCliente.toString();
+                boletaAnuncio["Comprobante"]=_selectedComprobante.toString();
+                _formKey.currentState!.validate();
+                bool isDetailValid=isDetailComplete();
+                if(isDetailValid){
+                  setState(() {
+                    if (_currentStep <= 2) {
+                      Navigator.push(context,MaterialPageRoute(builder: (context) =>
+                                  resumenForm(resumen: boletaAnuncio)
+                                ));
+                      } else {
+                              // Envía el formulario
+                      }
+                  });
+                }
+              }else{
+                boletaAnuncio["Nombre Cliente"]=nombreForm.text;
+                boletaAnuncio["Apellido Cliente"]=apellidoForm.text;
+                boletaAnuncio["DNI Cliente"]=dniForm.text;
+                boletaAnuncio["Correo"]=emailForm.text;
+                boletaAnuncio["Celular Cliente"]=phoneForm.text;
+                boletaAnuncio["Tipo Cliente"]=tipoCliente.toString();
+                boletaAnuncio["Comprobante"]=_selectedComprobante.toString();
+                boletaAnuncio["Razón Social"]=razonSocialForm.text;
+                boletaAnuncio["RUC"]=rucForm.text;
+                boletaAnuncio["Celular Empresa"]=empresaPhoneForm.text;
+                _formKey.currentState!.validate();
+                bool isDetailValid=isDetailComplete();
+                if(isDetailValid){
+                  setState(() {
+                    if (_currentStep <= 2) {
+                      Navigator.push(context,MaterialPageRoute(builder: (context) =>
+                                  resumenForm(resumen: boletaAnuncio)
+                                ));
+                      } else {
+                              // Envía el formulario
+                      }
+                  });
+                }
               }
+              
+              
               
             }
             
@@ -760,6 +926,50 @@ Container test(){
           },
           type: StepperType.vertical,
           onStepCancel: () {
+            if(_currentStep==0){
+              
+            }else if(_currentStep==1){
+              if(_selectedOption=="Clasificados"){
+                boletaAnuncio.remove("Sección");
+                boletaAnuncio.remove("Sub Seccion");
+                boletaAnuncio.remove("Numero de Dias");
+                boletaAnuncio.remove("Fecha Inicio");
+                boletaAnuncio.remove("Fecha Fin");
+                boletaAnuncio.remove("Contenido");
+                boletaAnuncio.remove("Precio Total");
+                boletaAnuncio.remove("Cantidad de Palabras");
+
+              }else if(_selectedOption=="Edicto"){
+                boletaAnuncio.remove("Tipo Edicto");
+                boletaAnuncio.remove("Fecha Inicio");
+                boletaAnuncio.remove("Fecha Fin");
+                boletaAnuncio.remove("Numero de Dias");
+                boletaAnuncio.remove("Provincia");
+                boletaAnuncio.remove("Distrito");
+                boletaAnuncio.remove("Contenido");
+              }
+            }else if(_currentStep==2 || _currentStep==3){
+              if(tipoCliente=="Persona Natural"){
+                boletaAnuncio.remove("Nombre Cliente");
+                boletaAnuncio.remove("Apellido Cliente");
+                boletaAnuncio.remove("DNI Cliente");
+                boletaAnuncio.remove("Correo");
+                boletaAnuncio.remove("Celular Cliente");
+                boletaAnuncio.remove("Tipo Cliente");
+                boletaAnuncio.remove("Comprobante");
+              }else{
+                boletaAnuncio.remove("Nombre Cliente");
+                boletaAnuncio.remove("Apellido Cliente");
+                boletaAnuncio.remove("DNI Cliente");
+                boletaAnuncio.remove("Correo");
+                boletaAnuncio.remove("Celular Cliente");
+                boletaAnuncio.remove("Tipo Cliente");
+                boletaAnuncio.remove("Comprobante");
+                boletaAnuncio.remove("Razón Social");
+                boletaAnuncio.remove("RUC");
+                boletaAnuncio.remove("Celular Empresa");
+              }
+            }
             setState(() {
               if (_currentStep > 0) {
                 _currentStep -= 1;
@@ -799,11 +1009,11 @@ Container test(){
                   items: const [
                     DropdownMenuItem(
 
-                      value: "1",
+                      value: "Clasificados",
                       child: Text("Clasificados")
                       ),
                     DropdownMenuItem(
-                      value: "2",
+                      value: "Edicto",
                       child: Text("Edicto")
                       ),
                   ],
@@ -819,7 +1029,7 @@ Container test(){
               ],
             ),
           ),
-      if (_selectedOption == "1")
+      if (_selectedOption == "Clasificados")
         Step(
           title: Text('Datos Anuncio'),
           content: Column(
@@ -828,54 +1038,184 @@ Container test(){
                 height: 20
               ),
               DropdownButtonFormField<String>(
-                
-                icon: Icon(Icons.attach_money),
-                  decoration: const InputDecoration(
-                    border:OutlineInputBorder(borderSide: BorderSide(width: 1),
-                    borderRadius: BorderRadius.all(Radius.circular(16.0))),
-                    labelText: "Sección"
-                    ),
-                  value: _selectedOptionClasificados,
-                  items: const [
-                    DropdownMenuItem(
-                      value: "1",
-                      child: Text("Economicos")
-                      ),
-                    DropdownMenuItem(
-                      value: "2",
-                      child: Text("Super-Economicos")
-                      ),
-                  ],
+                  
+                  value: tipoAnuncio,
+                  items: _secciones.map((seccion){
+                    return DropdownMenuItem<String>(
+                      value: seccion,
+                      child: Text(seccion),
+                      );
+                  }).toList(),
                   onChanged: (value) {
                     setState(() {
-                      value=="1"?tipoAnuncio="Economicos":tipoAnuncio="Super-Economicos";
-                      _selectedOptionClasificados=value!;
+                      tipoAnuncio=value!;
+                      _selectedCategory=_categorias[tipoAnuncio]![0];
                     });
                   },
+                  decoration: InputDecoration(
+                    floatingLabelBehavior: FloatingLabelBehavior.always,
+                    labelText: "Sección",
+                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(16))
+                  ),
                 ),
                 SizedBox(
                   height: 50,
                 ),
-                DropdownButtonFormField<String>(
-                
-                icon: Icon(Icons.new_releases),
-                  decoration: const InputDecoration(
-                    border:OutlineInputBorder(borderSide: BorderSide(width: 1),
-                    borderRadius: BorderRadius.all(Radius.circular(16.0))),
-                    labelText: "Sección"
+                if(tipoAnuncio!=null && tipoAnuncio!="")
+                  DropdownButtonFormField<String>(
+                    isExpanded: false,
+                    value: _selectedCategory,
+                    items: _categorias[tipoAnuncio]?.map((subcategoria) {
+                      return DropdownMenuItem<String>(
+                        value: subcategoria,
+                        child: Container(
+                          width: 150,
+                          child: Text(subcategoria,overflow: TextOverflow.visible))
+                        
+                        );
+                        
+                        } 
+                        ).toList(),
+                    onChanged: (value) {
+                      setState(() {
+                        _selectedCategory=value;
+                        
+                      });
+                    },
+
+                    decoration: InputDecoration(
+                      floatingLabelBehavior: FloatingLabelBehavior.always,
+                      labelText: "Sub Categoria",
+                      border: OutlineInputBorder(borderRadius: BorderRadius.circular(16))
                     ),
-                  value: _selectedCategory,
-                  items: _categorias[tipoAnuncio]?.map((subcategoria) {return DropdownMenuItem<String>(child: Text(subcategoria),value: subcategoria);} ).toList(),
-                  onChanged: (value) {
+                  ),
+                
+                SizedBox(
+                  height: 50,
+                ),
+                TextFormField(
+                  
+                  readOnly: true,
+                  controller: dateInicio,
+                  decoration: InputDecoration(
+                    floatingLabelBehavior: FloatingLabelBehavior.always,
+                    labelText: 'Desde',
+                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(16)),
+                    suffixIcon: Icon(Icons.edit_calendar_rounded),
+                  ),
+                  onChanged: (value){
                     setState(() {
-                      _selectedCategory=value;
+                      _formKey.currentState!.validate();
+                      dateInicio.text=value;
                     });
+                  },
+                  onTap: ()async{
+                    
+                    DateTime? pickedDate=await showDatePicker(
+                      confirmText: "Aceptar",
+                      cancelText: "Cancelar",
+                      builder: (BuildContext context, Widget? child) {
+                        return child!;
+                      },
+                      context: context, 
+                      initialDate: DateTime.now(), 
+                      firstDate: DateTime.now(), 
+                      lastDate: DateTime(2035)
+                      );
+                    if(pickedDate!=null){
+                      dateInicio.text=DateFormat("dd/MM/yyyy").format(pickedDate);
+                      setState(() {
+                        dateFinal.text="";
+                        ndiasForm.text="";
+                        nextDate=true;
+                        firstDate=pickedDate;
+                      });
+                      
+                      if(dateFinal.text!=null && dateFinal.text!="" && dateFinal.text.isNotEmpty){
+                        
+                        print("datefinal no es nulo");
+                        print(dateFinal.text);
+                        final DateFormat format = DateFormat('dd/MM/yyyy');
+                        DateTime fechaInicio=format.parse(dateInicio.text);
+                        DateTime fechaFinal=format.parse(dateFinal.text);
+                        final diferencia=fechaFinal.difference(fechaInicio).inDays;
+                        setState(() {
+                          ndiasForm.text=diferencia.toString();
+                          
+                        });
+                      }
+                    }
+                    
+                  },
+                  validator: (value) {
+                    if (value!.isEmpty) {
+                      return 'Campo Obligatorio';
+                    }
+                    return null;
+                    
                   },
                 ),
                 SizedBox(
                   height: 50,
                 ),
                 TextFormField(
+                  enabled: nextDate,
+                  readOnly: true,
+                  controller: dateFinal,
+                  decoration: InputDecoration(
+                    floatingLabelBehavior: FloatingLabelBehavior.always,
+                    labelText: 'Hasta',
+                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(16)),
+                    suffixIcon: Icon(Icons.edit_calendar_rounded),
+                  ),
+                  onChanged: (value){
+                    setState(() {
+                      _formKey.currentState!.validate();
+                    });
+                  },
+                  onTap: ()async{
+                    
+                    DateTime? pickedDate=await showDatePicker(
+                      confirmText: "Aceptar",
+                      cancelText: "Cancelar",
+                      builder: (BuildContext context, Widget? child) {
+                        return child!;
+                      },
+                      context: context, 
+                      initialDate: firstDate!.add(Duration(days: 1)), 
+                      firstDate: firstDate!.add(Duration(days: 1)), 
+                      lastDate: DateTime(2035)
+                      );
+                    if(pickedDate!=null){
+                      dateFinal.text=DateFormat("dd/MM/yyyy").format(pickedDate);
+                      if(dateInicio.text!=null && dateInicio.text!="" && dateInicio.text.isNotEmpty){
+                        print("dateinicio no es nulo");
+                        print(dateInicio.text);
+                        print(dateFinal.text);
+                        final DateFormat format = DateFormat('dd/MM/yyyy');
+                        DateTime fechaInicio=format.parse(dateInicio.text);
+                        DateTime fechaFinal=format.parse(dateFinal.text);
+                        final diferencia=fechaFinal.difference(fechaInicio).inDays;
+                        setState(() {
+                          ndiasForm.text=diferencia.toString();
+                        });
+                      }
+                    }
+                    
+                  },
+                  validator: (value) {
+                    if (value!.isEmpty) {
+                      return 'Campo Obligatorio';
+                    }
+                    return null;
+                    
+                  },
+                ),
+                SizedBox(
+                  height: 50,
+                ),
+                TextFormField(
+                  readOnly: true,
                   controller: ndiasForm,
                   decoration: InputDecoration(
                     floatingLabelBehavior: FloatingLabelBehavior.always,
@@ -890,7 +1230,7 @@ Container test(){
                   ],
                   validator: (value) {
                     if (value!.isEmpty || value==null) {
-                      return 'Ingresa un número entero positivo';
+                      return 'Campo Obligatorio';
                     }
                     final n = int.tryParse(value);
                     if (n == null || n <= 0) {
@@ -900,64 +1240,9 @@ Container test(){
                   },
                   onChanged: (value){
                     setState(() {
+                      dateInicio.text=value;
                       _formKey.currentState!.validate();
                     });
-                  },
-                ),
-                SizedBox(
-                  height: 50,
-                ),
-                TextFormField(
-                  controller: _date,
-                  decoration: InputDecoration(
-                    floatingLabelBehavior: FloatingLabelBehavior.always,
-                    labelText: 'Ingresa una fecha',
-                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(16)),
-                    suffixIcon: Icon(Icons.edit_calendar_rounded),
-                  ),
-                  onChanged: (value){
-                    setState(() {
-                      _formKey.currentState!.validate();
-                    });
-                  },
-                  onTap: ()async{
-                    DateTime? pickedDate=await showDatePicker(
-                      confirmText: "Aceptar",
-                      cancelText: "Cancelar",
-                      builder: (BuildContext context, Widget? child) {
-                        return Theme(
-                          
-                          data: ThemeData.light().copyWith(
-                            canvasColor: Color(0xFF006414),
-                            accentColor: Color(0xFF006414),
-                            appBarTheme: AppBarTheme(backgroundColor: Color(0xFF006414),),
-                            backgroundColor: Color(0xFF006414),
-                            cardColor: Color(0xFF006414),
-                            
-                            textButtonTheme: TextButtonThemeData(
-                              style: ButtonStyle(
-                                foregroundColor: MaterialStateProperty.all<Color>(Color(0xFF006414)),
-                                overlayColor: MaterialStateProperty.all<Color>(Color(0xFF006414)), 
-                              ),
-                            ),
-                          ),
-                          child: child!,
-                        );
-                      },
-                      context: context, 
-                      initialDate: DateTime.now(), 
-                      firstDate: DateTime(2000), 
-                      lastDate: DateTime(2035)
-                      );
-                    if(pickedDate!=null){
-                      _date.text=DateFormat("dd/MM/yyyy").format(pickedDate);
-                    }
-                  },
-                  validator: (value) {
-                    if (value!.isEmpty) {
-                      return 'Ingresa una fecha';
-                    }
-                    return null;
                   },
                 ),
                 SizedBox(
@@ -981,7 +1266,7 @@ Container test(){
                   },
                   validator: (value) {
                     if (value!.isEmpty) {
-                      return 'Ingresa un contenido';
+                      return 'Campo Obligatorio';
                     }
                     
                     return null;
@@ -995,7 +1280,7 @@ Container test(){
             ],
           ),
         )
-      else if (_selectedOption == "2")
+      else if (_selectedOption == "Edicto")
         Step(
           title: Text('Datos Anuncio'),
           content: Column(
@@ -1012,27 +1297,27 @@ Container test(){
                   value: _selectedOptionEdictos,
                   items: const [
                     DropdownMenuItem(
-                      value: "1",
+                      value: "Edicto Matrimonial",
                       child: Text("Edicto Matrimonial")
                       ),
                     DropdownMenuItem(
-                      value: "2",
+                      value: "Aviso Registral",
                       child: Text("Aviso Registral")
                       ),
                     DropdownMenuItem(
-                      value: "3",
+                      value: "Modificación Registral",
                       child: Text("Modificación Registral")
                       ),
                     DropdownMenuItem(
-                      value: "4",
+                      value: "Rectificacion Administrativa",
                       child: Text("Rectificacion Administrativa")
                       ),
                     DropdownMenuItem(
-                      value: "5",
+                      value: "Proclama Matrimonial",
                       child: Text("Proclama Matrimonial")
                       ),
                     DropdownMenuItem(
-                      value: "6",
+                      value: "Otros",
                       child: Text("Otros")
                       ),
                   ],
@@ -1040,11 +1325,11 @@ Container test(){
                     setState(() {
                       _selectedOptionClasificados=value!;
                     });
-                    if(_selectedOptionClasificados=="1"){
+                    if(_selectedOptionClasificados=="Edicto Matrimonial"){
                       
                       contenidoEdictoForm.text=" Hago saber que:<br>Que Don: _________________, de __ años de edad, estado civil _______, profesión __________, natural de __________, de nacionalidad _________, vecino del distrito de ___________, con domicilio en __________, Provincia de ___________ y Departamento de _________, con DNI Nº _________, quiere contraer matrimonio civil con Doña: _________________, de __ años de edad, estado civil _________, de profesión _____________, de nacionalidad _____________, vecina del distrito de _____________, con domicilio en _____________, Provincia de _____________ y Departamento de _____________, con DNI Nº _____________. Las personas que conozcan que los pretendientes tiene algún impedimento, deben de comunicar a esta oficina. <br>[ - Municipalidad de ??? -] - [ Direccion de la municipalidad ] <br>[ - Mes - ] - 2023<br> [ Nombre del Alcade ]<br> ALCALDE ";
 
-                    }else if(_selectedOptionClasificados=="2"){
+                    }else if(_selectedOptionClasificados=="Aviso Registral"){
                       contenidoEdictoForm.text=" Ante la Oficina de Registro del Estado Civil de la Municipalidad Distrital de _________, provincia de ___________ y departamento de __________, ha presentado: Don, _____________ quien mediante expediente Administrativo N° _______, solicita Rectificación Administrativa de la partida de Nacimiento registrada en el folio _____ del año _____; consignando en la misma con error no atribuible al Registrador Civil de la Época; los nombres de la madre de la titular de la partida dice ______ siendo correcto los nombres _________, se rectifica en merito a la Directiva 415-GRC/032-RENIEC. QUIENES SE CONSIDEREN AFECTADOS POR LA RECTIFICACIÓN A EFECTUARSE, PODRÁN SOLICITAR OPOSICIÓN DENTRO DE LOS (____) QUINCE DÍAS SIGUIENTES A LA FECHA DE PUBLICACIÓN, PRESENTANDO PRUEBA INSTRUMENTAL; DE LO CONTRARIO SERÁ RECHAZADA LA OPOSICIÓN.<br> [__Distrito__], ___ de ______ 2023<br>[__Nombre del Jefe de Registro Civil__]<br>Jefe de Registro Civil ";
 
                     }else{
@@ -1056,76 +1341,143 @@ Container test(){
                 height: 50,
               ),
               TextFormField(
-                  controller: _date,
+                  readOnly: true,
+                  controller: dateInicio,
                   decoration: InputDecoration(
                     floatingLabelBehavior: FloatingLabelBehavior.always,
-                    labelText: 'Ingresa una fecha',
+                    labelText: 'Desde',
                     border: OutlineInputBorder(borderRadius: BorderRadius.circular(16)),
                     suffixIcon: Icon(Icons.edit_calendar_rounded),
                   ),
-                  
+                  onChanged: (value){
+                    setState(() {
+                      _formKey.currentState!.validate();
+                    });
+                  },
                   onTap: ()async{
+                    
                     DateTime? pickedDate=await showDatePicker(
                       confirmText: "Aceptar",
                       cancelText: "Cancelar",
                       builder: (BuildContext context, Widget? child) {
-                        return Theme(
-                          
-                          data: ThemeData.light().copyWith(
-                            canvasColor: Color(0xFF006414),
-                            accentColor: Color(0xFF006414),
-                            appBarTheme: AppBarTheme(backgroundColor: Color(0xFF006414),),
-                            backgroundColor: Color(0xFF006414),
-                            cardColor: Color(0xFF006414),
-                            
-                            textButtonTheme: TextButtonThemeData(
-                              style: ButtonStyle(
-                                foregroundColor: MaterialStateProperty.all<Color>(Color(0xFF006414)),
-                                overlayColor: MaterialStateProperty.all<Color>(Color(0xFF006414)), 
-                              ),
-                            ),
-                          ),
-                          child: child!,
-                        );
+                        return child!;
+                        
                       },
                       context: context, 
                       initialDate: DateTime.now(), 
-                      firstDate: DateTime(2000), 
+                      firstDate: DateTime.now(), 
                       lastDate: DateTime(2035)
                       );
                     if(pickedDate!=null){
-                      _date.text=DateFormat("dd/MM/yyyy").format(pickedDate);
+                      
+                      dateInicio.text=DateFormat("dd/MM/yyyy").format(pickedDate);
+                      setState(() {
+                        ndiasForm.text="";
+                        nextDate=true;
+                        dateFinal.text="";
+                        firstDate=pickedDate;
+                      });
+                      if(dateFinal.text!=null && dateFinal.text!="" && dateFinal.text.isNotEmpty){
+                        
+                        print("datefinal no es nulo");
+                        print(dateFinal.text);
+                        final DateFormat format = DateFormat('dd/MM/yyyy');
+                        DateTime fechaInicio=format.parse(dateInicio.text);
+                        DateTime fechaFinal=format.parse(dateFinal.text);
+                        final diferencia=fechaFinal.difference(fechaInicio).inDays;
+                        setState(() {
+                          ndiasForm.text=diferencia.toString();
+                        });
+                      }
                     }
+                    
                   },
                   validator: (value) {
                     if (value!.isEmpty) {
-                      return 'Ingresa una fecha válida';
+                      return 'Campo Obligatorio';
                     }
                     return null;
-                  },
-                  onSaved: (value) {
-                    // Aquí puedes guardar el valor ingresado por el usuario
+                    
                   },
                 ),
                 SizedBox(
                   height: 50,
                 ),
                 TextFormField(
-                  
+                  enabled: nextDate,
+                  readOnly: true,
+                  controller: dateFinal,
                   decoration: InputDecoration(
-                    labelText: 'Ingresa un numero de dias',
                     floatingLabelBehavior: FloatingLabelBehavior.always,
+                    labelText: 'Hasta',
+                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(16)),
+                    suffixIcon: Icon(Icons.edit_calendar_rounded),
+                  ),
+                  onChanged: (value){
+                    setState(() {
+                      _formKey.currentState!.validate();
+                    });
+                  },
+                  onTap: ()async{
+                    
+                    DateTime? pickedDate=await showDatePicker(
+                      confirmText: "Aceptar",
+                      cancelText: "Cancelar",
+                      builder: (BuildContext context, Widget? child) {
+                        
+                          return child!;
+                        
+                      },
+                      context: context, 
+                      initialDate: firstDate!.add(Duration(days: 1)), 
+                      firstDate: firstDate!.add(Duration(days: 1)), 
+                      lastDate: DateTime(2035)
+                      );
+                    if(pickedDate!=null){
+                      dateFinal.text=DateFormat("dd/MM/yyyy").format(pickedDate);
+                      if(dateInicio.text!=null && dateInicio.text!="" && dateInicio.text.isNotEmpty){
+                        print("dateinicio no es nulo");
+                        print(dateInicio.text);
+                        print(dateFinal.text);
+                        final DateFormat format = DateFormat('dd/MM/yyyy');
+                        DateTime fechaInicio=format.parse(dateInicio.text);
+                        DateTime fechaFinal=format.parse(dateFinal.text);
+                        final diferencia=fechaFinal.difference(fechaInicio).inDays;
+                        setState(() {
+                          ndiasForm.text=diferencia.toString();
+                        });
+                      }
+                    }
+                    
+                  },
+                  validator: (value) {
+                    if (value!.isEmpty) {
+                      return 'Campo Obligatorio';
+                    }
+                    return null;
+                    
+                  },
+                ),
+                SizedBox(
+                  height: 50,
+                ),
+                TextFormField(
+                  readOnly: true,
+                  controller: ndiasForm,
+                  decoration: InputDecoration(
+                    floatingLabelBehavior: FloatingLabelBehavior.always,
+                    labelText: "Número de días",
                     border: OutlineInputBorder(borderRadius: BorderRadius.circular(16)),
                     suffixIcon: Icon(Icons.calendar_today_rounded)
+
                   ),
                   keyboardType: TextInputType.numberWithOptions(signed: false, decimal: false),
                   inputFormatters: <TextInputFormatter>[
                     FilteringTextInputFormatter.digitsOnly
                   ],
-                  
                   validator: (value) {
-                    if (value!.isEmpty) {
-                      return 'Ingresa un número entero positivo';
+                    if (value!.isEmpty || value==null) {
+                      return 'Campo Obligatorio';
                     }
                     final n = int.tryParse(value);
                     if (n == null || n <= 0) {
@@ -1133,8 +1485,10 @@ Container test(){
                     }
                     return null;
                   },
-                  onSaved: (value) {
-                    // Aquí puedes guardar el valor ingresado por el usuario
+                  onChanged: (value){
+                    setState(() {
+                      _formKey.currentState!.validate();
+                    });
                   },
                 ),
                 SizedBox(
@@ -1152,7 +1506,7 @@ Container test(){
                     setState(() {
                       _selectedProvince = value;
                       print(_selectedProvince);
-                      _selectedDistrict=null;
+                      _selectedDistrict=_districts[_selectedProvince]![0];
                     });
                   },
                   decoration: InputDecoration(
@@ -1203,7 +1557,7 @@ Container test(){
 
                   validator: (value) {
                     if (value!.isEmpty) {
-                      return 'Ingresa un contenido';
+                      return 'Campo Obligatorio';
                     }
                     return null;
                   },
@@ -1224,6 +1578,7 @@ Container test(){
                 height: 20,
               ),
               TextFormField(
+                  keyboardType: TextInputType.name,
                   controller: nombreForm,
                   decoration: InputDecoration(
                     floatingLabelBehavior: FloatingLabelBehavior.always,
@@ -1235,7 +1590,7 @@ Container test(){
                   ),
                   validator: (value) {
                     if (value!.isEmpty) {
-                      return 'Ingresa nombre valido';
+                      return 'Campo Obligatorio';
                     }
                     return null;
                   },
@@ -1248,6 +1603,7 @@ Container test(){
               ),
               TextFormField(
                   controller: apellidoForm,
+                  keyboardType: TextInputType.name,
                   decoration: InputDecoration(
                     floatingLabelBehavior: FloatingLabelBehavior.always,
                     labelText: 'Ingresa un apellido',
@@ -1256,7 +1612,7 @@ Container test(){
                   ),
                   validator: (value) {
                     if (value!.isEmpty) {
-                      return 'Ingresa apellido valido';
+                      return 'Campo Obligatorio';
                     }
                     return null;
                   },
@@ -1268,7 +1624,13 @@ Container test(){
                 height: 50,
               ),
               TextFormField(
+                  keyboardType: TextInputType.number,
                   controller: dniForm,
+                  onChanged: (value){
+                    if (value.length > 8) {
+                      dniForm.text = value.substring(0, 8);
+                    }
+                  },
                   decoration: InputDecoration(
                     floatingLabelBehavior: FloatingLabelBehavior.always,
                     labelText: 'Ingresa un DNI',
@@ -1277,18 +1639,26 @@ Container test(){
                   ),
                   validator: (value) {
                     if (value!.isEmpty) {
-                      return 'Ingresa dni valido';
+                      return 'Campo obligatorio';
                     }
+                    if (int.tryParse(value) == null) {
+                      return 'Debe ser un número entero';
+                    }
+                    if (value.length != 8) {
+                      return 'El número debe tener exactamente 8 dígitos';
+                    }
+                    // Validación adicional según tus necesidades
                     return null;
                   },
                   onSaved: (value) {
-                    // Aquí puedes guardar el valor ingresado por el usuario
+                    
                   },
                 ),
               SizedBox(
                 height: 50,
               ),
               TextFormField(
+                  keyboardType: TextInputType.emailAddress,
                   controller: emailForm,
                   decoration: InputDecoration(
                     floatingLabelBehavior: FloatingLabelBehavior.always,
@@ -1298,7 +1668,10 @@ Container test(){
                   ),
                   validator: (value) {
                     if (value!.isEmpty) {
-                      return 'Ingresa correo valido';
+                      return 'Campo obligatorio';
+                    }
+                    if (!RegExp(r'^[\w-]+(\.[\w-]+)*@([\w-]+\.)+[a-zA-Z]{2,7}$').hasMatch(value)) {
+                      return 'Dirección de correo electrónico no válida';
                     }
                     return null;
                   },
@@ -1310,6 +1683,7 @@ Container test(){
                 height: 50,
               ),
               TextFormField(
+                  keyboardType: TextInputType.phone,
                   controller: phoneForm,
                   decoration: InputDecoration(
                     floatingLabelBehavior: FloatingLabelBehavior.always,
@@ -1317,10 +1691,19 @@ Container test(){
                     border: OutlineInputBorder(borderRadius: BorderRadius.circular(16)),
                     suffixIcon: Icon(Icons.phone)
                   ),
+                  onChanged: (value){
+                    if (value.length > 9) {
+                      phoneForm.text = value.substring(0, 9);
+                    }
+                  },
                   validator: (value) {
                     if (value!.isEmpty) {
-                      return 'Ingresa telefono valido';
+                      return 'Campo obligatorio';
                     }
+                    if (value.length != 9) {
+                      return 'El número debe tener exactamente 9 dígitos';
+                    }
+                    // Validación adicional según tus necesidades
                     return null;
                   },
                   onSaved: (value) {
@@ -1362,157 +1745,36 @@ Container test(){
             ],
           ),
         ),
-        Step(title: Text("Confirmar"), content: Column(children: [
-          Table(
-            border: TableBorder.all(borderRadius: BorderRadius.circular(16)),
-            children: [
-              TableRow(
-                children: [
-                  TableCell(child: Container(
-                    padding: EdgeInsets.all(8),
-                    child: Text("CONCEPTO"),
-                  )),
-                  TableCell(child: Container(
-                    padding: EdgeInsets.all(8),
-                    child: Text("DETALLE"),
-                  )),
-                ]
-              ),
-              TableRow(
-                children: [
-                  TableCell(child: Container(
-                    padding: EdgeInsets.all(8),
-                    child: Text("Tipo Cliente"),
-                  )),
-                  TableCell(child: Container(
-                    padding: EdgeInsets.all(8),
-                    child: Text(tipoCliente),
-                  )),
-                ]
-              ),
-              TableRow(
-                children: [
-                  TableCell(child: Container(
-                    padding: EdgeInsets.all(8),
-                    child: Text("Tipo Anuncio"),
-                  )),
-                  TableCell(child: Container(
-                    padding: EdgeInsets.all(8),
-                    child: Text(tipoAnuncio),
-                  )),
-                ]
-              ),
-              TableRow(
-                children: [
-                  TableCell(child: Container(
-                    padding: EdgeInsets.all(8),
-                    child: Text("Categoria"),
-                  )),
-                  TableCell(child: Container(
-                    padding: EdgeInsets.all(8),
-                    child: Text(_selectedCategory.toString()),
-                  )),
-                ]
-              ),
-              TableRow(
-                children: [
-                  TableCell(child: Container(
-                    padding: EdgeInsets.all(8),
-                    child: Text("Detalles Anuncio"),
-                  )),
-                  TableCell(child: Container(
-                    padding: EdgeInsets.all(8),
-                    child: Text(contenidoAnuncioForm.text??contenidoEdictoForm.text),
-                  )),
-                ]
-              ),
-              TableRow(
-                children: [
-                  TableCell(child: Container(
-                    padding: EdgeInsets.all(8),
-                    child: Text("Cantidad de Dias"),
-                  )),
-                  TableCell(child: Container(
-                    padding: EdgeInsets.all(8),
-                    child: Text(ndiasForm.text),
-                  )),
-                ]
-              ),
-              TableRow(
-                children: [
-                  TableCell(child: Container(
-                    padding: EdgeInsets.all(8),
-                    child: Text("Precio total"),
-                  )),
-                  TableCell(child: Container(
-                    padding: EdgeInsets.all(8),
-                    child: Text("S/."),
-                  )),
-                ]
-              ),
-              TableRow(
-                children: [
-                  TableCell(child: Container(
-                    padding: EdgeInsets.all(8),
-                    child: Text("Cantidad de Palabras"),
-                  )),
-                  TableCell(child: Container(
-                    padding: EdgeInsets.all(8),
-                    child: Text("n"),
-                  )),
-                ]
-              ),
-              TableRow(
-                children: [
-                  TableCell(child: Container(
-                    padding: EdgeInsets.all(8),
-                    child: Text("Nombre del Cliente"),
-                  )),
-                  TableCell(child: Container(
-                    padding: EdgeInsets.all(8),
-                    child: Text(nombreForm.text),
-                  )),
-                ]
-              ),
-              TableRow(
-                children: [
-                  TableCell(child: Container(
-                    padding: EdgeInsets.all(8),
-                    child: Text("Apellido del Cliente"),
-                  )),
-                  TableCell(child: Container(
-                    padding: EdgeInsets.all(8),
-                    child: Text(apellidoForm.text),
-                  )),
-                ]
-              ),
-              TableRow(
-                children: [
-                  TableCell(child: Container(
-                    padding: EdgeInsets.all(8),
-                    child: Text("Telefono del Cliente"),
-                  )),
-                  TableCell(child: Container(
-                    padding: EdgeInsets.all(8),
-                    child: Text(phoneForm.text),
-                  )),
-                ]
-              ),
-              TableRow(
-                children: [
-                  TableCell(child: Container(
-                    padding: EdgeInsets.all(8),
-                    child: Text("DNI del Cliente"),
-                  )),
-                  TableCell(child: Container(
-                    padding: EdgeInsets.all(8),
-                    child: Text(dniForm.text),
-                  )),
-                ]
-              ),
-            ],
+        /*
+        Step(title: Text("Confirmar"), content: 
+          Expanded(
+            child: ListView.builder(
+                    itemCount: boletaAnuncio.length,
+                    itemBuilder: (context, index) {
+                      return Text("a");
+                    }
+            ),
           )
-        ],))
+        )
+        Column(
+          mainAxisSize: MainAxisSize.max,
+          children: [
+
+          DataTable(
+            columns: [
+              DataColumn(label: Text("CONCEPTO")),
+              DataColumn(label: Text("DETALLE")),
+            ], 
+            rows: boletaAnuncio.entries
+            .map(
+              (entry) => DataRow(cells: <DataCell>[
+                DataCell(Text(entry.key,overflow: TextOverflow.clip, softWrap: true,)),
+                DataCell(Flexible(child: Text(entry.value.toString()))),
+              ]
+            ),
+          ).toList(),
+              )
+        ],)*/
         ];
   }
 
