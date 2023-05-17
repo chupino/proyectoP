@@ -14,7 +14,7 @@ import 'package:encrypt/encrypt.dart' as cy;
 class pdfViewers{
 
   PdfViewerController controller=PdfViewerController();
-  FutureBuilder pdfViewerBytes(){
+  Widget pdfViewerBytes(bool isPremium){
     
     Future<Uint8List> pdfBytes () async{
       final prefs=await SharedPreferences.getInstance();
@@ -64,7 +64,8 @@ class pdfViewers{
     
     ScaffoldMessenger.of(context).showSnackBar(snackBarFinal);
   }
-  return FutureBuilder(
+  if(isPremium){
+      return FutureBuilder(
     future: pdfBytes(),
     builder: (context,snapshot) {
 
@@ -86,5 +87,18 @@ class pdfViewers{
     }}
     
   );
+  }else{
+    return Center(
+      child: Column(
+        
+        mainAxisSize: MainAxisSize.min,
+        children: [
+        Text("Para poder acceder a este contenido necesitas suscribirte",style: TextStyle(fontSize: 30),textAlign: TextAlign.center,),
+        SizedBox(height: 30,),
+        Icon(Icons.lock_rounded,size: 60,)
+      ]),
+    );
+  }
+
   }
 }

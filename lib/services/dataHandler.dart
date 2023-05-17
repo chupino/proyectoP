@@ -280,6 +280,30 @@ class UserServices {
     }
 
   }
+
+  final List<Map> users=[
+    {
+      "nombre":"Mauricio",
+      "apellido":"Escalante",
+      "correo":"mauriciodiego2019@gmail.com",
+      "contraseña":"mauricio123",
+      "isPremium":false
+    },
+    {
+      "nombre":"Pepe",
+      "apellido":"Alvarez",
+      "correo":"pepe@gmail.com",
+      "contraseña":"pepe123",
+      "isPremium":false
+    },
+    {
+      "nombre":"Maria",
+      "apellido":"Perez",
+      "correo":"maria@gmail.com",
+      "contraseña":"maria123",
+      "isPremium":true
+    },
+  ];
   final List<Map> tags = [
   {
     "titulo": "Cultura",
@@ -505,6 +529,17 @@ class UserServices {
     final prefs = await SharedPreferences.getInstance();
     if (prefs.getBool("economia") == null) {
       prefs.setBool("economia", false);
+    }
+    if(prefs.getString("user")==null){
+      Map usuarioDefecto={
+      "nombre": "sin nombre",
+      "apellido": "sin apellido",
+      "correo": "nosuscripto@gmail.com",
+      "contraseña": "nopass",
+      "isPremium": false
+    };
+    String usuarioDefectoString=jsonEncode(usuarioDefecto);
+    prefs.setString("user", usuarioDefectoString);
     }
     if (prefs.getBool("darkMode") == null) {
       prefs.setBool("darkMode", false);

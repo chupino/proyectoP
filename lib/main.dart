@@ -58,7 +58,7 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  
+  Map usuario={};
   ThemeMode _themeMode = ThemeMode.light;
   void _toggleTheme() {
     setState(() {
@@ -84,8 +84,7 @@ class _MyAppState extends State<MyApp> {
     }
 
   }
-  FutureBuilder preApp() {
-
+  FutureBuilder preApp(){
     return FutureBuilder(
       future: getLogin(),
       builder: (context,snapshot){
@@ -103,11 +102,22 @@ class _MyAppState extends State<MyApp> {
 
           );
         }else{
-          return bannerLoading();
+          return bannerLoading(user: usuario,);
         }
       });
   }
-
+  void getUsuario() async{
+    final prefs=await SharedPreferences.getInstance();
+    String usuarioAlmacenado=await prefs.getString("user")!;
+    usuario=jsonDecode(usuarioAlmacenado);
+  }
+  @override
+  void initState() {
+    // TODO: implement initState
+    UserServices().initKeys();
+    getUsuario();
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {

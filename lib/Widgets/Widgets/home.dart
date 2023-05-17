@@ -29,10 +29,12 @@ class Home extends StatefulWidget {
   final List notas;
   final Uint8List imagenPDF;
   final String fecha;
+  bool isPremium;
   @override
   _HomePageState createState() => _HomePageState();
 
   Home({
+    required this.isPremium,
     required this.notas,
     required this.imagenPDF,
     required this.fecha,
@@ -74,6 +76,10 @@ class _HomePageState extends State<Home> with TickerProviderStateMixin{
     'La Unión',
     'OTROS',
   ];
+
+  bool isPremium=false;
+  
+
 
   Map<String,dynamic> boletaAnuncio={};
   List<String> _secciones=[
@@ -173,6 +179,7 @@ class _HomePageState extends State<Home> with TickerProviderStateMixin{
   void initState() {
     // TODO: implement initState
     super.initState();
+    isPremium=widget.isPremium;
     WidgetsBinding.instance.addPostFrameCallback((_) => initPlatFormState());
     _tabController = TabController(length: 4, vsync: this);
     
@@ -309,7 +316,7 @@ Container test(){
   Container pageHeadline() {
     return Container(
       child: Center(
-        child: pdfViewers().pdfViewerBytes()
+        child: pdfViewers().pdfViewerBytes(isPremium)
       ),
     );
   }
@@ -2028,8 +2035,8 @@ return FutureBuilder(
   Widget miniatura(BuildContext context){
     final Uint8List imagen=widget.imagenPDF;
     final fechaParametro=widget.fecha;
-
-    if(imagen.isNotEmpty){
+    if(isPremium){
+      if(imagen.isNotEmpty){
           return GestureDetector(
                             onTap: (() {
                               setState(() {
@@ -2072,24 +2079,11 @@ return FutureBuilder(
         child: Text("No se pudo cargar el pdf"),
       );
     }
-  }
-  FutureBuilder thumbnail(BuildContext context) {
-    return FutureBuilder(
-      future: UserServices().getThumbnail(),
-      builder: (context,snapshot){
-        if(snapshot.hasData){
-            return GestureDetector(
-                            onTap: (() {
-                              DefaultTabController.of(context).index = 1;
-                              setState(() {
-                                _selectedIndex = 1;
-          
-                              });
-                            }),
-                            child: Container(
+    }else{
+      return Container(
                               margin: const EdgeInsets.symmetric(vertical: 5),
                               padding:
-                                  const EdgeInsets.symmetric(vertical: 10),
+                                  const EdgeInsets.symmetric(vertical: 150),
                               decoration: BoxDecoration(
                                 color: Theme.of(context).canvasColor,
                                 border: Border(
@@ -2106,26 +2100,25 @@ return FutureBuilder(
                               child: Container(
                                 padding: EdgeInsets.symmetric(horizontal: 10),
                                 child: 
-                                  Image.memory(snapshot.data!,fit: BoxFit.cover,)
+                                  Column(
+                                    crossAxisAlignment: CrossAxisAlignment.center,
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      
+                                      Text("Para poder acceder a este contenido deberas estas suscrito",style: TextStyle(fontSize: 20,),textAlign: TextAlign.center,),
+                                      SizedBox(height: 20,),
+                                      Icon(Icons.lock_rounded,size: 40,),
+                                    ],
+                                  )
+
                                 ,
                               ),
-                            ),
-                          );
-          
-        }else{
-          return SizedBox(
-            height: 300,
-            width: 300,
-            child: Center(
-              child: CircularProgressIndicator(),
-            ),
-            );
-        }
-        
-      },
-      
-    );
+                            );
+    }
+    
   }
+
 
   Future<void> initPlatFormState() async {
     OneSignal.shared

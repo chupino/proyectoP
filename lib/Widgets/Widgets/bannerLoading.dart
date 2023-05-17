@@ -24,7 +24,13 @@ import '../../providers/ThemeHandler.dart';
 import '../../services/dataHandler.dart';
 
 class bannerLoading extends StatefulWidget {
-  const bannerLoading({super.key});
+  Map user;
+  bannerLoading(
+    {
+      required this.user,
+      super.key
+    }
+  );
 
   @override
   State<bannerLoading> createState() => _bannerLoadingState();
@@ -94,7 +100,7 @@ class _bannerLoadingState extends State<bannerLoading> {
         return MaterialApp(
           theme: Provider.of<ThemeHandler>(context).theme,
           routes: {
-            '/home': (context) => Home(notas: datos1!,imagenPDF: datos2,fecha: fechaGuardada),
+            '/home': (context) => Home(notas: datos1!,imagenPDF: datos2,fecha: fechaGuardada,isPremium: widget.user["isPremium"],),
             '/search': (context) => Search(),
             '/downloads': (context) => Downloads(),
             '/settings': (context) => Ajustes(),
